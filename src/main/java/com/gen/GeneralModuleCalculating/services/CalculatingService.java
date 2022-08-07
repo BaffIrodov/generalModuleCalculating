@@ -26,7 +26,6 @@ public class CalculatingService {
             new QPlayerOnMapResults("playerOnMapResults");
     private static final QRoundHistory roundHistory =
             new QRoundHistory("roundHistory");
-
     private static final QMapsCalculatingQueue mapsCalculatingQueue =
             new QMapsCalculatingQueue("mapsCalculatingQueue");
 
@@ -58,13 +57,23 @@ public class CalculatingService {
                 .where(mapsCalculatingQueue.processed.eq(false)).stream().count();
         result.mapsAddingCount = -1;
         result.mapsAddingTime = -1;
+        calculate();
         return result;
     }
 
-    public void test() {
-        PlayerOnMapResults player = (PlayerOnMapResults) queryFactory.from(playerOnMapResults)
-                .fetchFirst();
-        RoundHistory history = (RoundHistory) queryFactory.from(roundHistory).fetchFirst();
-        int i = 0;
+    public void calculate() {
+        List<Integer> availableStatsIds = queryFactory.from(mapsCalculatingQueue)
+                .select(mapsCalculatingQueue.idStatsMap)
+                .where(mapsCalculatingQueue.processed.eq(false))
+                .fetch();
+        for(Integer id : availableStatsIds) {
+            List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
+                    queryFactory.from(playerOnMapResults)
+                    .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+            RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
+                    .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+            int i = 0;
+            break;
+        }
     }
 }

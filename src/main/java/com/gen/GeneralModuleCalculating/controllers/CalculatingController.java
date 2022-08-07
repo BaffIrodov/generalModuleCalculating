@@ -21,11 +21,6 @@ public class CalculatingController {
     @Autowired
     CalculatingService calculatingService;
 
-    @GetMapping("/test")
-    public void test() {
-        calculatingService.test();
-    }
-
     @GetMapping("/create-queue")
     public MapsCalculatingQueueResponseDto createQueue() {
         return calculatingService.createQueue();
