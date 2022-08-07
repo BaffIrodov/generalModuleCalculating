@@ -21,7 +21,7 @@ public class PlayerOnMapResults {
     public String url; //url игрока, вероятно, может быть удалено
     public String playerName; //ник игрока
     public Date dateOfMatch; //дата матча
-    public MapsEnum playedMap; //карта, на которой был сыгран матч
+    public String playedMap; //карта, на которой был сыгран матч
     public String playedMapString; //карта в удобном виде
     public String team; //команда, в которой играет человек - left, right
     public int kills; //убийства (парсинг: целое число)
@@ -39,7 +39,7 @@ public class PlayerOnMapResults {
         this.url = "";
         this.playerName = "";
         this.dateOfMatch = null;
-        this.playedMap = MapsEnum.ALL;
+        this.playedMap = MapsEnum.ALL.toString();
         this.playedMapString = MapsEnum.ALL.toString();
         this.team = "";
         this.kills = 0;
@@ -57,7 +57,7 @@ public class PlayerOnMapResults {
         return this.playerId != 0 &&
                 this.idStatsMap != 0 &&
                 this.dateOfMatch != null &&
-                this.playedMap != MapsEnum.ALL &&
+                this.playedMap != "ALL" &&
                 this.playedMapString != "ALL" &&
                 !this.team.equals("");
     }

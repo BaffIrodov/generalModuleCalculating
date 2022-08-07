@@ -4,7 +4,41 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="" />
+    <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MapsCalculatingQueueResponseDto.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/MapsCalculatingQueue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/repositories/MapsCalculatingQueueRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MapDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MatchesDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MatchesWithTimeDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerOnMapResultsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerOnMapResultsDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/Team.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/MatchesLink.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/PlayerOnMapResults.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/PlayerOnMapResults.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/ResultsLink.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/StatsResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/database/testFillDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/database/testFillDB.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/database/initDB.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/database/testFillDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/database/testFillDB.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QMatchesLink.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QResultsLink.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QStatsResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,7 +52,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="JpbToolWindowState">
     <option name="myId2FirstActivated">
@@ -53,29 +87,29 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Users/kseni/Desktop/ProgsGeneral/generalModuleCalculating/generalModuleCalculating",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Facets",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "File.Encoding",
-    "spring.configuration.checksum": "6d136d2cb744c451f3aa0576b21493a3"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/kseni/Desktop/ProgsGeneral/generalModuleCalculating/generalModuleCalculating&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
+    &quot;spring.configuration.checksum&quot;: &quot;6d136d2cb744c451f3aa0576b21493a3&quot;
   },
-  "keyToStringList": {
-    "DatabaseDriversLRU": [
-      "postgresql"
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
     ]
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\serge\Desktop\Spring\GeneralModule\src\main\java\com\gen\GeneralModule" />
@@ -85,6 +119,7 @@
       <recent name="C:\Users\serge\Desktop\Spring\GeneralModule\src\main\resources\static\css" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.gen.GeneralModuleCalculating.repositories" />
       <recent name="com.gen.GeneralModule.controllers" />
       <recent name="com.gen.GeneralModule.services" />
       <recent name="com.gen.GeneralModule.repositories" />
@@ -148,6 +183,8 @@
       <workItem from="1659813884142" duration="814000" />
       <workItem from="1659816381687" duration="2194000" />
       <workItem from="1659861102811" duration="1434000" />
+      <workItem from="1659862731474" duration="4800000" />
+      <workItem from="1659868686690" duration="4080000" />
     </task>
     <servers />
   </component>
@@ -174,6 +211,7 @@
         <watch expression="elementsWithNamesNames" />
         <watch expression="pl" />
         <watch expression="userAgents.get(randIndex)" />
+        <watch expression="queryFactory.from(playerOnMapResults).fetchFirst()" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>

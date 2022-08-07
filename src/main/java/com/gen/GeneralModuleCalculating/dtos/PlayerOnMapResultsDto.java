@@ -16,7 +16,7 @@ public class PlayerOnMapResultsDto {
     public String url; //url игрока, вероятно, может быть удалено
     public String playerName; //ник игрока
     public Date dateOfMatch; //дата матча
-    public MapsEnum playedMap; //карта, на которой был сыгран матч
+    public String playedMap; //карта, на которой был сыгран матч
     public String playedMapString; //карта в удобном виде
     public String team; //команда, в которой играет человек - left, right
     public int kills; //убийства (парсинг: целое число)

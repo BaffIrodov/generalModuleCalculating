@@ -39,7 +39,7 @@ public class QPlayerOnMapResults extends EntityPathBase<PlayerOnMapResults> {
 
     public final NumberPath<Integer> kills = createNumber("kills", Integer.class);
 
-    public final EnumPath<com.gen.GeneralModuleCalculating.common.MapsEnum> playedMap = createEnum("playedMap", com.gen.GeneralModuleCalculating.common.MapsEnum.class);
+    public final StringPath playedMap = createString("playedMap");
 
     public final StringPath playedMapString = createString("playedMapString");
 

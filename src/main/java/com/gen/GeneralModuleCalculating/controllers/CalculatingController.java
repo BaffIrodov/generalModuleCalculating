@@ -1,5 +1,6 @@
 package com.gen.GeneralModuleCalculating.controllers;
 
+import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.Errors;
 import com.gen.GeneralModuleCalculating.services.CalculatingService;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +24,16 @@ public class CalculatingController {
     @GetMapping("/test")
     public void test() {
         calculatingService.test();
+    }
+
+    @GetMapping("/create-queue")
+    public MapsCalculatingQueueResponseDto createQueue() {
+        return calculatingService.createQueue();
+    }
+
+    @GetMapping("/current-queue-size")
+    public MapsCalculatingQueueResponseDto getCurrentQueueSize(){
+        return calculatingService.getCurrentQueueSize();
     }
 
 }
