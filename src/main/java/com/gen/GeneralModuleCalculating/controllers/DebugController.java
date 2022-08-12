@@ -13,4 +13,8 @@ public class DebugController {
     @Autowired
     DebugService debugService;
 
+    @GetMapping("/files-distribution")
+    public void filesWithDistribution(){
+        debugService.getFilesWithDistribution();
+    }
 }

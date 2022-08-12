@@ -5,22 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/ForceTeamCalculator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/RoundHistoryCalculator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/PlayerForce.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/repositories/PlayerForceRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/3051dfcd-1d16-4c28-a867-c48ad1ca0099.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/3051dfcd-1d16-4c28-a867-c48ad1ca0099.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/database/initDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/DebugController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/DebugController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -172,7 +162,7 @@
       <workItem from="1659993618993" duration="2292000" />
       <workItem from="1660060414677" duration="92000" />
       <workItem from="1660060518901" duration="9681000" />
-      <workItem from="1660268186489" duration="1601000" />
+      <workItem from="1660268186489" duration="4937000" />
     </task>
     <servers />
   </component>
@@ -189,17 +179,6 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java</url>
-          <line>95</line>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/generalModule$GeneralModuleApplication.ic" NAME="GeneralModuleApplication Coverage Results" MODIFIED="1659737161148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
