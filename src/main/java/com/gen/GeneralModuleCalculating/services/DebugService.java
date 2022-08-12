@@ -21,49 +21,40 @@ public class DebugService {
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
 
-    public List<Float> init() {
-        List<Float> resultFloat = getFullListFloat(playerOnMapResults.adr, "D:/test/select_adr.txt");
-        resultFloat = getFullListFloat(playerOnMapResults.cast20, "D:/test/select_cast20.txt");
-        resultFloat = getFullListFloat(playerOnMapResults.rating20, "D:/test/select_rating20.txt");
-        List<Integer> resultInteger = getFullListInteger(playerOnMapResults.kills, "D:/test/select_kills.txt");
-        resultInteger = getFullListInteger(playerOnMapResults.headshots, "D:/test/select_headshots.txt");
-        return resultFloat;
+    public void getFilesWithDistribution() {
+        getFullListFloat(playerOnMapResults.adr, "D:/test/select_adr.txt");
+        getFullListFloat(playerOnMapResults.cast20, "D:/test/select_cast20.txt");
+        getFullListFloat(playerOnMapResults.rating20, "D:/test/select_rating20.txt");
+        getFullListInteger(playerOnMapResults.kills, "D:/test/select_kills.txt");
+        getFullListInteger(playerOnMapResults.headshots, "D:/test/select_headshots.txt");
     }
 
-    public List<Float> getFullListFloat(NumberPath<Float> path, String fileName) {
+    public void getFullListFloat(NumberPath<Float> path, String fileName) {
         try {
             FileWriter file = new FileWriter(fileName);
             List<Float> result = queryFactory.from(playerOnMapResults).select(path).fetch();
-            getAverageOfListFloat(result);
             Map<Float, Integer> resultWithFreq = getResultsWithFrequenciesFloat(result);
             for (Map.Entry<Float, Integer> pair : resultWithFreq.entrySet()) {
                 file.write(pair.getKey().toString().replace(".", ",") + "\t" + pair.getValue() + "\n");
             }
             file.flush();
-            getSliceByPercent(95, 100, result);
-            getGroupForGauss(10, result);
         } catch (Exception e) {
             //nothing
         }
-        return new ArrayList<>();
     }
 
-    public List<Integer> getFullListInteger(NumberPath<Integer> path, String fileName) {
+    public void getFullListInteger(NumberPath<Integer> path, String fileName) {
         try {
             FileWriter file = new FileWriter(fileName);
             List<Integer> result = queryFactory.from(playerOnMapResults).select(path).fetch();
-            getAverageOfListInt(result);
             Map<Integer, Integer> resultWithFreq = getResultsWithFrequenciesInteger(result);
             for (Map.Entry<Integer, Integer> pair : resultWithFreq.entrySet()) {
                 file.write(pair.getKey() + "\t" + pair.getValue() + "\n");
             }
             file.flush();
-            //getSliceByPercent(95, 100, result);
-            //getGroupForGauss(10, result);
         } catch (Exception e) {
             //nothing
         }
-        return new ArrayList<>();
     }
 
     private List<Float> getSliceByPercent(int minPercent, int maxPercent, List<Float> source) {

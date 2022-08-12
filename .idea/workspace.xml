@@ -5,39 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MapsCalculatingQueueResponseDto.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/MapsCalculatingQueue.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/repositories/MapsCalculatingQueueRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/c2e89521-b74f-4630-b5e7-d50002eff455/storage_v2/_src_/database/generalModuleDB.8siLEw/schema/public.abK9xQ.meta" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/CalculatingController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MapDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MatchesDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/MatchesWithTimeDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerOnMapResultsDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/PlayerOnMapResultsDto.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/dtos/Team.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/MatchesLink.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/PlayerOnMapResults.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/PlayerOnMapResults.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/ResultsLink.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/StatsResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/database/initDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/database/testFillDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/database/testFillDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/database/initDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/database/initDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/database/testFillDB.sql" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/database/testFillDB.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QMatchesLink.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" beforeDir="false" afterPath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QPlayerOnMapResults.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QResultsLink.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/generated-sources/java/com/gen/GeneralModuleCalculating/entities/QStatsResponse.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/DebugController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/controllers/DebugController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +69,7 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/kseni/Desktop/ProgsGeneral/generalModuleCalculating/generalModuleCalculating&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/serge/Desktop/calculating/generalModuleCalculating&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;project.structure.last.edited&quot;: &quot;Facets&quot;,
     &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
@@ -185,6 +158,11 @@
       <workItem from="1659861102811" duration="1434000" />
       <workItem from="1659862731474" duration="4800000" />
       <workItem from="1659868686690" duration="4080000" />
+      <workItem from="1659983086335" duration="2594000" />
+      <workItem from="1659993618993" duration="2292000" />
+      <workItem from="1660060414677" duration="92000" />
+      <workItem from="1660060518901" duration="9681000" />
+      <workItem from="1660268186489" duration="4937000" />
     </task>
     <servers />
   </component>
@@ -202,23 +180,10 @@
       </map>
     </option>
   </component>
-  <component name="XDebuggerManager">
-    <watches-manager>
-      <configuration name="SpringBootApplicationConfigurationType">
-        <watch expression="resultsLinks" />
-        <watch expression="elementsWithNamesNames" />
-        <watch expression="elementsWithNamesNames" />
-        <watch expression="elementsWithNamesNames" />
-        <watch expression="pl" />
-        <watch expression="userAgents.get(randIndex)" />
-        <watch expression="queryFactory.from(playerOnMapResults).fetchFirst()" language="JAVA" />
-      </configuration>
-    </watches-manager>
-  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/generalModule$GeneralModuleApplication.ic" NAME="GeneralModuleApplication Coverage Results" MODIFIED="1659737161148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
     <SUITE FILE_PATH="coverage/GeneralModule$GeneralModuleApplication.ic" NAME="GeneralModuleApplication Coverage Results" MODIFIED="1656529842262" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
       <FILTER>com.gen.GeneralModule.*</FILTER>
     </SUITE>
-    <SUITE FILE_PATH="coverage/generalModule$GeneralModuleApplication.ic" NAME="GeneralModuleApplication Coverage Results" MODIFIED="1659737161148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

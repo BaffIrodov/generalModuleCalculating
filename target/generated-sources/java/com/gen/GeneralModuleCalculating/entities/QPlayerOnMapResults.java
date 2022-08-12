@@ -51,6 +51,8 @@ public class QPlayerOnMapResults extends EntityPathBase<PlayerOnMapResults> {
 
     public final StringPath team = createString("team");
 
+    public final StringPath teamWinner = createString("teamWinner");
+
     public final StringPath url = createString("url");
 
     public QPlayerOnMapResults(String variable) {

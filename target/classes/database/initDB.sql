@@ -5,3 +5,10 @@ CREATE TABLE IF NOT EXISTS maps_calculating_queue
     "calculation_time" int8,
     "processed" BOOLEAN
     );
+
+DROP TABLE IF EXISTS player_force;
+CREATE TABLE IF NOT EXISTS player_force
+(
+    "player_id" int8 not null ,
+    "player_force" float8
+);
