@@ -37,8 +37,8 @@ public class CalculatingController {
 
     @GetMapping("/debug")
     public void debug(){
-        debugService.init();
-//        calculatingService.debug();
+//        debugService.init();
+        calculatingService.debug();
     }
 
 }
