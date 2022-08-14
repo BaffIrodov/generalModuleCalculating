@@ -6,9 +6,11 @@
   <component name="ChangeListManager">
     <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Cast20Calculator.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/RoundHistoryCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/RoundHistoryCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/RoundHistory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/entities/RoundHistory.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/DebugService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -161,7 +163,8 @@
       <workItem from="1660060414677" duration="92000" />
       <workItem from="1660060518901" duration="9681000" />
       <workItem from="1660268186489" duration="4937000" />
-      <workItem from="1660477968290" duration="4245000" />
+      <workItem from="1660477968290" duration="5152000" />
+      <workItem from="1660495554135" duration="7139000" />
     </task>
     <servers />
   </component>
@@ -178,6 +181,17 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java</url>
+          <line>95</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/generalModule$GeneralModuleApplication.ic" NAME="GeneralModuleApplication Coverage Results" MODIFIED="1659737161148" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

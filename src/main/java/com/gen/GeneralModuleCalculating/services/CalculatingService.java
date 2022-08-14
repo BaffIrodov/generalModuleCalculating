@@ -34,6 +34,9 @@ public class CalculatingService {
     @Autowired
     Rating20Calculator rating20Calculator;
 
+    @Autowired
+    RoundHistoryCalculator roundHistoryCalculator;
+
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
     private static final QRoundHistory roundHistory =
@@ -69,7 +72,6 @@ public class CalculatingService {
                 .where(mapsCalculatingQueue.processed.eq(false)).stream().count();
         result.mapsAddingCount = -1;
         result.mapsAddingTime = -1;
-        calculate();
         return result;
     }
 
@@ -82,12 +84,14 @@ public class CalculatingService {
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
                 .fetch();
+
         for(Integer id : availableStatsIds) {
             List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
                     queryFactory.from(playerOnMapResults)
                     .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                     .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+            List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
             float adr1 = adrCalculator.getForceByAdr(players.get(0));
             float kills1 = killsCalculator.getForceByKills(players.get(0));
             float headshots1 = headshotsCalculator.getForceByHeadshots(players.get(0));

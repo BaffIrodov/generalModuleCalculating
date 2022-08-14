@@ -25,6 +25,8 @@ public class QRoundHistory extends EntityPathBase<RoundHistory> {
 
     public final NumberPath<Integer> idStatsMap = createNumber("idStatsMap", Integer.class);
 
+    public final BooleanPath leftTeamIsTerroristsInFirstHalf = createBoolean("leftTeamIsTerroristsInFirstHalf");
+
     public final StringPath roundSequence = createString("roundSequence");
 
     public QRoundHistory(String variable) {
