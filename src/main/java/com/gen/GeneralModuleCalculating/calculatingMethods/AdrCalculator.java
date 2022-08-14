@@ -30,7 +30,7 @@ public class AdrCalculator {
          * Получается формула -4x^4 - x^3 + 6x^2 + 5x
          */
         float normalizedAdr = (player.adr - 74) * Config.normalizingCoeffAdr;
-        if(normalizedAdr < 0) {
+        if(normalizedAdr > 0) {
             return  (float) (Config.fourCoeffFuncAdr * Math.pow(normalizedAdr, 4) +
                     Config.threeCoeffFuncAdr * Math.pow(normalizedAdr, 3) +
                     Config.twoCoeffFuncAdr * Math.pow(normalizedAdr, 2) +

@@ -9,7 +9,7 @@ public class HeadshotsCalculator {
     public float getForceByHeadshots(PlayerOnMapResults player) {
         // среднее количество хэдшотов = 8.1
         float normalizedHeadshots = (player.headshots - 8) * Config.normalizingCoeffHeadshots;
-        if (normalizedHeadshots < 0) {
+        if (normalizedHeadshots > 0) {
             return (float) (Config.fourCoeffFuncHeadshots * Math.pow(normalizedHeadshots, 4) +
                     Config.threeCoeffFuncHeadshots * Math.pow(normalizedHeadshots, 3) +
                     Config.twoCoeffFuncHeadshots * Math.pow(normalizedHeadshots, 2) +

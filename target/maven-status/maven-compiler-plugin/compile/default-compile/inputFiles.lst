@@ -1,5 +1,6 @@
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\target\generated-sources\java\com\gen\GeneralModuleCalculating\entities\QPlayerOnMapResults.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\entities\Errors.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\RoundHistoryCalculator.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\target\generated-sources\java\com\gen\GeneralModuleCalculating\entities\QRoundHistory.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\services\ErrorsService.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\Config.java
@@ -9,9 +10,14 @@ C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\ge
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\common\CommonUtils.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\dtos\MapsCalculatingQueueResponseDto.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\target\generated-sources\java\com\gen\GeneralModuleCalculating\entities\QMapsCalculatingQueue.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\Cast20Calculator.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\Rating20Calculator.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\repositories\PlayerForceRepository.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\dtos\PlayerOnMapResultsDto.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\repositories\MapsCalculatingQueueRepository.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\ForceTeamCalculator.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\target\generated-sources\java\com\gen\GeneralModuleCalculating\entities\QPlayerForce.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\KillsCalculator.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\repositories\ErrorsRepository.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\AdrCalculator.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\controllers\ErrorsController.java
@@ -20,7 +26,7 @@ C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\ge
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\common\MapsEnum.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\GeneralModuleCalculatingApplication.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\services\DebugService.java
-C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\KDCalculator.java
+C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\calculatingMethods\HeadshotsCalculator.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\entities\MapsCalculatingQueue.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\src\main\java\com\gen\GeneralModuleCalculating\entities\PlayerOnMapResults.java
 C:\Users\serge\Desktop\calculating\generalModuleCalculating\target\generated-sources\java\com\gen\GeneralModuleCalculating\entities\QErrors.java
