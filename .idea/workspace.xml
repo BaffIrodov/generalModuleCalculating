@@ -6,16 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="c369a914-eb99-41e6-a996-06d0e30bee93" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/AdrCalculator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Cast20Calculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Cast20Calculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Cast20Calculator.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Config.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/HeadshotsCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/HeadshotsCalculator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/KDCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/KillsCalculator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Rating20Calculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/calculatingMethods/Rating20Calculator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/gen/GeneralModuleCalculating/services/CalculatingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/excel/adr.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/excel/adr.xlsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -168,7 +161,7 @@
       <workItem from="1660060414677" duration="92000" />
       <workItem from="1660060518901" duration="9681000" />
       <workItem from="1660268186489" duration="4937000" />
-      <workItem from="1660477968290" duration="3247000" />
+      <workItem from="1660477968290" duration="4245000" />
     </task>
     <servers />
   </component>

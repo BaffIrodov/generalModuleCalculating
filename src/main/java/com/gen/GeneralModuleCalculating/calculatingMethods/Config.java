@@ -35,14 +35,6 @@ public class Config {
     public static float threeCoeffFuncHeadshots = (float) (-1); //коэффициент возле члена с нулевой степенью в полиноме
     public static float fourCoeffFuncHeadshots = (float) (4); //коэффициент возле члена с нулевой степенью в полиноме
 
-    // каст
-    public static float normalizingCoeffCast20 = (float) (1.0/75); //нормировочный коэффициент
-    public static float zeroCoeffFuncCast20 = (float) (0); //коэффициент возле члена с нулевой степенью в полиноме
-    public static float oneCoeffFuncCast20 = (float) (5); //коэффициент возле члена с нулевой степенью в полиноме
-    public static float twoCoeffFuncCast20 = (float) (-6); //коэффициент возле члена с нулевой степенью в полиноме
-    public static float threeCoeffFuncCast20 = (float) (-1); //коэффициент возле члена с нулевой степенью в полиноме
-    public static float fourCoeffFuncCast20 = (float) (4); //коэффициент возле члена с нулевой степенью в полиноме
-
     // рейтинг20
     public static float normalizingCoeffRating20 = (float) (1.0/1.8); //нормировочный коэффициент
     public static float zeroCoeffFuncRating20 = (float) (0); //коэффициент возле члена с нулевой степенью в полиноме

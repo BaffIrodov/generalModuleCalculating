@@ -32,9 +32,6 @@ public class CalculatingService {
     HeadshotsCalculator headshotsCalculator;
 
     @Autowired
-    Cast20Calculator cast20Calculator;
-
-    @Autowired
     Rating20Calculator rating20Calculator;
 
     private static final QPlayerOnMapResults playerOnMapResults =
@@ -94,27 +91,22 @@ public class CalculatingService {
             float adr1 = adrCalculator.getForceByAdr(players.get(0));
             float kills1 = killsCalculator.getForceByKills(players.get(0));
             float headshots1 = headshotsCalculator.getForceByHeadshots(players.get(0));
-            float cast1 = cast20Calculator.getForceByCast20(players.get(0));
             float rating1 = rating20Calculator.getForceByRating20(players.get(0));
             float adr2 = adrCalculator.getForceByAdr(players.get(1));
             float kills2 = killsCalculator.getForceByKills(players.get(1));
             float headshots2 = headshotsCalculator.getForceByHeadshots(players.get(1));
-            float cast2 = cast20Calculator.getForceByCast20(players.get(1));
             float rating2 = rating20Calculator.getForceByRating20(players.get(1));
             float adr3 = adrCalculator.getForceByAdr(players.get(2));
             float kills3 = killsCalculator.getForceByKills(players.get(2));
             float headshots3 = headshotsCalculator.getForceByHeadshots(players.get(2));
-            float cast3 = cast20Calculator.getForceByCast20(players.get(2));
             float rating3 = rating20Calculator.getForceByRating20(players.get(2));
             float adr4 = adrCalculator.getForceByAdr(players.get(3));
             float kills4 = killsCalculator.getForceByKills(players.get(3));
             float headshots4 = headshotsCalculator.getForceByHeadshots(players.get(3));
-            float cast4 = cast20Calculator.getForceByCast20(players.get(3));
             float rating4 = rating20Calculator.getForceByRating20(players.get(3));
             float adr5 = adrCalculator.getForceByAdr(players.get(4));
             float kills5 = killsCalculator.getForceByKills(players.get(4));
             float headshots5 = headshotsCalculator.getForceByHeadshots(players.get(4));
-            float cast5 = cast20Calculator.getForceByCast20(players.get(4));
             float rating5 = rating20Calculator.getForceByRating20(players.get(4));
             int i = 0;
             break;
