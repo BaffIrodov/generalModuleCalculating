@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Log4j2
@@ -40,6 +42,9 @@ public class CalculatingService {
 
     @Autowired
     RoundHistoryCalculator roundHistoryCalculator;
+
+    @Autowired
+    Calculator calculator;
 
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
@@ -103,10 +108,19 @@ public class CalculatingService {
     }
 
     public void calculate() {
+        long now = System.currentTimeMillis();
         List<Integer> availableStatsIds = queryFactory.from(mapsCalculatingQueue)
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
                 .fetch();
+
+        List<Integer> existingPlayerIds = queryFactory.from(playerOnMapResults)
+                .select(playerOnMapResults.playerId)
+                .where(playerOnMapResults.idStatsMap.in(availableStatsIds))
+                .fetch().stream().toList();
+
+        List<PlayerForce> allPlayerForces = playerForceRepository.findAllById(existingPlayerIds).stream().toList();
+        Map<Integer, List<PlayerForce>> playerForcesMap = allPlayerForces.stream().collect(Collectors.groupingBy(e -> e.playerId));
 
         for(Integer id : availableStatsIds) {
             List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
@@ -115,28 +129,13 @@ public class CalculatingService {
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                     .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
             List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
-            float adr1 = adrCalculator.getForceByAdr(players.get(0));
-            float kills1 = killsCalculator.getForceByKills(players.get(0));
-            float headshots1 = headshotsCalculator.getForceByHeadshots(players.get(0));
-            float rating1 = rating20Calculator.getForceByRating20(players.get(0));
-            float adr2 = adrCalculator.getForceByAdr(players.get(1));
-            float kills2 = killsCalculator.getForceByKills(players.get(1));
-            float headshots2 = headshotsCalculator.getForceByHeadshots(players.get(1));
-            float rating2 = rating20Calculator.getForceByRating20(players.get(1));
-            float adr3 = adrCalculator.getForceByAdr(players.get(2));
-            float kills3 = killsCalculator.getForceByKills(players.get(2));
-            float headshots3 = headshotsCalculator.getForceByHeadshots(players.get(2));
-            float rating3 = rating20Calculator.getForceByRating20(players.get(2));
-            float adr4 = adrCalculator.getForceByAdr(players.get(3));
-            float kills4 = killsCalculator.getForceByKills(players.get(3));
-            float headshots4 = headshotsCalculator.getForceByHeadshots(players.get(3));
-            float rating4 = rating20Calculator.getForceByRating20(players.get(3));
-            float adr5 = adrCalculator.getForceByAdr(players.get(4));
-            float kills5 = killsCalculator.getForceByKills(players.get(4));
-            float headshots5 = headshotsCalculator.getForceByHeadshots(players.get(4));
-            float rating5 = rating20Calculator.getForceByRating20(players.get(4));
-            int i = 0;
-            break;
+            players.forEach(player -> {
+                float force = calculator.calculatePlayerForce(player, forces, 1, 1, 0.5f, 1, 1);
+                PlayerForce playerForce = playerForcesMap.get(player.playerId).get(0);
+                playerForce.playerForce += force;
+            });
         }
+        playerForceRepository.saveAll(allPlayerForces);
+        System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
     }
 }

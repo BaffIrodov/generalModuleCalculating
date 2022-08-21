@@ -23,12 +23,12 @@ public class Calculator {
     Rating20Calculator rating20Calculator;
 
     //history добавляю сюда, чтобы записывать в базу результаты игроков и автоматом учитывать результативность по раундам
-    public float calculatePlayerForce(PlayerOnMapResults player, float adrMultiplier,
-                                      float killsMultiplier, float headshotsMultiplier,
-                                      float ratingMultiplier, List<Float> forcesHistory,
+    public float calculatePlayerForce(PlayerOnMapResults player, List<Float> forcesHistory,
+                                      float adrMultiplier, float killsMultiplier,
+                                      float headshotsMultiplier, float ratingMultiplier,
                                       float historyMultiplier) {
         float forceFromHistory;
-        if(player.team.equals("Left")) {
+        if(player.team.equals("left")) {
             forceFromHistory = forcesHistory.get(0);
         } else {
             forceFromHistory = forcesHistory.get(1);

@@ -11,5 +11,5 @@ CREATE TABLE IF NOT EXISTS player_force
 (
     "player_id" int8 not null,
     "player_force" float8,
-    "stability" int8
+    "player_stability" int8
 );

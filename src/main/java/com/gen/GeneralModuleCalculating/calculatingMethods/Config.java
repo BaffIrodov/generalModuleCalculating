@@ -42,4 +42,7 @@ public class Config {
     public static float twoCoeffFuncRating20 = (float) (-6); //коэффициент возле члена с нулевой степенью в полиноме
     public static float threeCoeffFuncRating20 = (float) (-1); //коэффициент возле члена с нулевой степенью в полиноме
     public static float fourCoeffFuncRating20 = (float) (4); //коэффициент возле члена с нулевой степенью в полиноме
+
+    // history
+    public static float normalizingCoeffHistory = (float) (1.0/20);
 }

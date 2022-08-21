@@ -15,13 +15,14 @@ public class RoundHistoryCalculator {
         char[] chars = roundSequence.toCharArray();
         List<Character> firstHalf = getFirstHalf(chars);
         List<Character> secondHalf = getSecondHalf(chars);
+        if(leftTeamIsTerroristsInFirstHalf == null) leftTeamIsTerroristsInFirstHalf = true;
         List<Float> firstHalfRes = calculateFirstHalf(firstHalf, leftTeamIsTerroristsInFirstHalf);
         List<Float> secondHalfRes = calculateSecondHalf(secondHalf, leftTeamIsTerroristsInFirstHalf);
         leftForce = firstHalfRes.get(0) + secondHalfRes.get(0);
         rightForce = firstHalfRes.get(1) + secondHalfRes.get(1);
         float average = (leftForce + rightForce) / 2;
-        leftForce =  leftForce - average;
-        rightForce = rightForce - average;
+        leftForce =  (leftForce - average) * Config.normalizingCoeffHistory;
+        rightForce = (rightForce - average) * Config.normalizingCoeffHistory;
         return new ArrayList<>(Arrays.asList(leftForce, rightForce));
     }
 
