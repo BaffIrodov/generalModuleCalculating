@@ -30,6 +30,11 @@ public class CalculatingController {
         return calculatingService.createQueue();
     }
 
+    @GetMapping("/create-player-force-table")
+    public void createPlayerForceTable() {
+        calculatingService.createPlayerForceTable();;
+    }
+
     @GetMapping("/current-queue-size")
     public MapsCalculatingQueueResponseDto getCurrentQueueSize(){
         return calculatingService.getCurrentQueueSize();

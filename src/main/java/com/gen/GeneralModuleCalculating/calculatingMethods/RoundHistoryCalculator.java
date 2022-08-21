@@ -19,6 +19,9 @@ public class RoundHistoryCalculator {
         List<Float> secondHalfRes = calculateSecondHalf(secondHalf, leftTeamIsTerroristsInFirstHalf);
         leftForce = firstHalfRes.get(0) + secondHalfRes.get(0);
         rightForce = firstHalfRes.get(1) + secondHalfRes.get(1);
+        float average = (leftForce + rightForce) / 2;
+        leftForce =  leftForce - average;
+        rightForce = rightForce - average;
         return new ArrayList<>(Arrays.asList(leftForce, rightForce));
     }
 

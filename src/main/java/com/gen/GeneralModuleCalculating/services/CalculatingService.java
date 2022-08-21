@@ -4,6 +4,7 @@ import com.gen.GeneralModuleCalculating.calculatingMethods.*;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.repositories.MapsCalculatingQueueRepository;
+import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,9 @@ public class CalculatingService {
     MapsCalculatingQueueRepository mapsCalculatingQueueRepository;
 
     @Autowired
+    PlayerForceRepository playerForceRepository;
+
+    @Autowired
     AdrCalculator adrCalculator;
 
     @Autowired
@@ -39,10 +43,17 @@ public class CalculatingService {
 
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
+
+    private static final QPlayerForce playerForce =
+            new QPlayerForce("playerForce");
     private static final QRoundHistory roundHistory =
             new QRoundHistory("roundHistory");
     private static final QMapsCalculatingQueue mapsCalculatingQueue =
             new QMapsCalculatingQueue("mapsCalculatingQueue");
+
+    private static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
+    private static float playerForceDefault = 5; //Дефолтная сила игроков
+    private static int playerStability = 100; //Дефолтная стабильность игроков
 
     public MapsCalculatingQueueResponseDto createQueue() {
         long now = System.currentTimeMillis();
@@ -64,6 +75,18 @@ public class CalculatingService {
         result.mapsAddingCount = statsIds.size();
         result.currentNotProcessedMaps = -1;
         return result;
+    }
+
+    //для расчета нужно знать силу противника, однако при первом проходе её не будет, потому надо инициировать
+    public void createPlayerForceTable() {
+        //если ранее таблица не была инициирована
+        if(queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()){
+            for(int i = 0; i < playerForceTableSize; i++) {
+                //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
+                PlayerForce playerForce = new PlayerForce(i, playerForceDefault, playerStability);
+                playerForceRepository.save(playerForce);
+            }
+        }
     }
 
     public MapsCalculatingQueueResponseDto getCurrentQueueSize() {
