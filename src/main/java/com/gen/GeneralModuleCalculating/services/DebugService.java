@@ -1,6 +1,9 @@
 package com.gen.GeneralModuleCalculating.services;
 
+import com.gen.GeneralModuleCalculating.entities.PlayerForce;
+import com.gen.GeneralModuleCalculating.entities.QPlayerForce;
 import com.gen.GeneralModuleCalculating.entities.QPlayerOnMapResults;
+import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.core.types.dsl.NumberPath;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +20,24 @@ public class DebugService {
     @Autowired
     JPAQueryFactory queryFactory;
 
+    @Autowired
+    PlayerForceRepository playerForceRepository;
+
 
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
+
+    private static final QPlayerForce playerForce =
+            new QPlayerForce("playerForce");
+
+    public void resetAllPlayerForcesToDefault() {
+        long now = System.currentTimeMillis();
+        List<PlayerForce> forces = playerForceRepository.findAll();
+        forces.forEach(p -> p.playerForce = 5f);
+        forces.forEach(p -> p.playerStability = 100);
+        playerForceRepository.saveAll(forces);
+        System.out.println("Расчет всех сил плэйеров занял: " + (System.currentTimeMillis() - now) + " мс");
+    }
 
     public void getFilesWithDistribution() {
         getFullListFloat(playerOnMapResults.adr, "D:/test/select_adr.txt");

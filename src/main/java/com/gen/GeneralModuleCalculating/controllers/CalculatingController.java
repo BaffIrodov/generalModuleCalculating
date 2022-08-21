@@ -40,9 +40,11 @@ public class CalculatingController {
         return calculatingService.getCurrentQueueSize();
     }
 
-    @GetMapping("/debug")
-    public void debug(){
-        calculatingService.debug();
+    @GetMapping("/calculate-forces")
+    public long calculateForces() {
+        long now = System.currentTimeMillis();
+        calculatingService.calculateForces();
+        return (System.currentTimeMillis() - now);
     }
 
 }

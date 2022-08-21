@@ -17,4 +17,14 @@ public class DebugController {
     public void filesWithDistribution(){
         debugService.getFilesWithDistribution();
     }
+
+    @GetMapping("/debug")
+    public void debug(){
+//        calculatingService.debug();
+    }
+
+    @GetMapping("/reset-players-forces")
+    public void resetPlayersForces() {
+        debugService.resetAllPlayerForcesToDefault();
+    }
 }

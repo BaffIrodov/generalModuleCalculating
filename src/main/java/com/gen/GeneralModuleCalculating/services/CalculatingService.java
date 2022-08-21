@@ -1,16 +1,19 @@
 package com.gen.GeneralModuleCalculating.services;
 
 import com.gen.GeneralModuleCalculating.calculatingMethods.*;
+import com.gen.GeneralModuleCalculating.common.MapsEnum;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.repositories.MapsCalculatingQueueRepository;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.criterion.Example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -84,14 +87,24 @@ public class CalculatingService {
 
     //для расчета нужно знать силу противника, однако при первом проходе её не будет, потому надо инициировать
     public void createPlayerForceTable() {
+        long now = System.currentTimeMillis();
         //если ранее таблица не была инициирована
         if(queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()){
+            List<PlayerForce> playerForces = new ArrayList<>();
             for(int i = 0; i < playerForceTableSize; i++) {
-                //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
-                PlayerForce playerForce = new PlayerForce(i, playerForceDefault, playerStability);
-                playerForceRepository.save(playerForce);
+                for(int map = 0; map < MapsEnum.values().length; map++) {
+                    //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
+                    PlayerForce playerForce = new PlayerForce();
+                    playerForce.playerId = i;
+                    playerForce.playerForce = playerForceDefault;
+                    playerForce.playerStability = playerStability;
+                    playerForce.map = Arrays.stream(MapsEnum.values()).toList().get(map).toString();
+                    playerForces.add(playerForce);
+                }
             }
+            playerForceRepository.saveAll(playerForces);
         }
+        System.out.println("Создание таблицы заняло: " + (System.currentTimeMillis() - now) + " мс");
     }
 
     public MapsCalculatingQueueResponseDto getCurrentQueueSize() {
@@ -103,23 +116,24 @@ public class CalculatingService {
         return result;
     }
 
-    public void debug() {
-        calculate();
-    }
-
-    public void calculate() {
+    public void calculateForces() {
         long now = System.currentTimeMillis();
         List<Integer> availableStatsIds = queryFactory.from(mapsCalculatingQueue)
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
                 .fetch();
 
+        availableStatsIds = availableStatsIds.subList(0, 100);
+
         List<Integer> existingPlayerIds = queryFactory.from(playerOnMapResults)
                 .select(playerOnMapResults.playerId)
                 .where(playerOnMapResults.idStatsMap.in(availableStatsIds))
                 .fetch().stream().toList();
 
-        List<PlayerForce> allPlayerForces = playerForceRepository.findAllById(existingPlayerIds).stream().toList();
+        List<Integer> playerIdsFromForceTable = queryFactory.from(playerForce)
+                .select(playerForce.id).where(playerForce.playerId.in(existingPlayerIds)).fetch();
+
+        List<PlayerForce> allPlayerForces = playerForceRepository.findAllById(playerIdsFromForceTable).stream().toList();
         Map<Integer, List<PlayerForce>> playerForcesMap = allPlayerForces.stream().collect(Collectors.groupingBy(e -> e.playerId));
 
         for(Integer id : availableStatsIds) {
@@ -131,8 +145,9 @@ public class CalculatingService {
             List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
             players.forEach(player -> {
                 float force = calculator.calculatePlayerForce(player, forces, 1, 1, 0.5f, 1, 1);
-                PlayerForce playerForce = playerForcesMap.get(player.playerId).get(0);
-                playerForce.playerForce += force;
+                playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+//                playerForce.playerForce += force;
             });
         }
         playerForceRepository.saveAll(allPlayerForces);
