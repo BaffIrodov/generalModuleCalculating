@@ -4,6 +4,7 @@ import com.gen.GeneralModuleCalculating.calculatingMethods.*;
 import com.gen.GeneralModuleCalculating.common.MapsEnum;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.*;
+import com.gen.GeneralModuleCalculating.readers.CalculatingReader;
 import com.gen.GeneralModuleCalculating.repositories.MapsCalculatingQueueRepository;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -21,9 +22,6 @@ import java.util.stream.Collectors;
 @Service
 @Log4j2
 public class CalculatingService {
-
-    @Autowired
-    JPAQueryFactory queryFactory;
 
     @Autowired
     MapsCalculatingQueueRepository mapsCalculatingQueueRepository;
@@ -51,6 +49,12 @@ public class CalculatingService {
 
     @Autowired
     StabilityCalculator stabilityCalculator;
+
+    @Autowired
+    CalculatingReader calculatingReader;
+
+    @Autowired
+    JPAQueryFactory queryFactory;
 
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
@@ -120,23 +124,11 @@ public class CalculatingService {
     }
 
     public void calculateForces() {
-        List<Integer> availableStatsIds = queryFactory.from(mapsCalculatingQueue)
-                .leftJoin(roundHistory).on(mapsCalculatingQueue.idStatsMap
-                        .eq(roundHistory.idStatsMap))
-                .select(mapsCalculatingQueue.idStatsMap)
-                .where(mapsCalculatingQueue.processed.eq(false))
-                .orderBy(roundHistory.dateOfMatch.desc())
-                .fetch();
+        List<Integer> availableStatsIds = calculatingReader.getAvailableStatsIdsOrdered();
+        List<Integer> existingPlayerIds = calculatingReader
+                .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIds);
+        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds);
 
-        List<Integer> existingPlayerIds = queryFactory.from(playerOnMapResults)
-                .select(playerOnMapResults.playerId)
-                .where(playerOnMapResults.idStatsMap.in(availableStatsIds))
-                .fetch().stream().toList();
-
-        List<Integer> playerIdsFromForceTable = queryFactory.from(playerForce)
-                .select(playerForce.id).where(playerForce.playerId.in(existingPlayerIds)).fetch();
-
-        List<PlayerForce> allPlayerForces = playerForceRepository.findAllById(playerIdsFromForceTable).stream().toList();
         Map<Integer, List<PlayerForce>> playerForcesMap = allPlayerForces.stream().collect(Collectors.groupingBy(e -> e.playerId));
         long now = System.currentTimeMillis();
         for (Integer id : availableStatsIds) {
@@ -191,5 +183,14 @@ public class CalculatingService {
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
         playerForceRepository.saveAll(allPlayerForces);
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
+    }
+
+    public void improvementTest(Integer testPercent) {
+        List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
+        List<Integer> availableStatsIdsTest = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
+        List<Integer> existingPlayerIds = calculatingReader
+                .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIdsTrain);
+        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds);
+        int i = 0;
     }
 }
