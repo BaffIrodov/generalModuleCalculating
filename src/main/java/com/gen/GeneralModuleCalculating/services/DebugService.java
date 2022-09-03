@@ -36,7 +36,7 @@ public class DebugService {
         forces.forEach(p -> p.playerForce = 5f);
         forces.forEach(p -> p.playerStability = 100);
         playerForceRepository.saveAll(forces);
-        System.out.println("Расчет всех сил плэйеров занял: " + (System.currentTimeMillis() - now) + " мс");
+        System.out.println("Сброс всех сил плэйеров занял: " + (System.currentTimeMillis() - now) + " мс");
     }
 
     public void getFilesWithDistribution() {

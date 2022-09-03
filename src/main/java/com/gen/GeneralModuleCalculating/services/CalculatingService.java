@@ -49,6 +49,9 @@ public class CalculatingService {
     @Autowired
     Calculator calculator;
 
+    @Autowired
+    StabilityCalculator stabilityCalculator;
+
     private static final QPlayerOnMapResults playerOnMapResults =
             new QPlayerOnMapResults("playerOnMapResults");
 
@@ -89,10 +92,10 @@ public class CalculatingService {
     public void createPlayerForceTable() {
         long now = System.currentTimeMillis();
         //если ранее таблица не была инициирована
-        if(queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()){
+        if (queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()) {
             List<PlayerForce> playerForces = new ArrayList<>();
-            for(int i = 0; i < playerForceTableSize; i++) {
-                for(int map = 0; map < MapsEnum.values().length; map++) {
+            for (int i = 0; i < playerForceTableSize; i++) {
+                for (int map = 0; map < MapsEnum.values().length; map++) {
                     //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
                     PlayerForce playerForce = new PlayerForce();
                     playerForce.playerId = i;
@@ -117,13 +120,13 @@ public class CalculatingService {
     }
 
     public void calculateForces() {
-        long now = System.currentTimeMillis();
         List<Integer> availableStatsIds = queryFactory.from(mapsCalculatingQueue)
+                .leftJoin(roundHistory).on(mapsCalculatingQueue.idStatsMap
+                        .eq(roundHistory.idStatsMap))
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
+                .orderBy(roundHistory.dateOfMatch.desc())
                 .fetch();
-
-        availableStatsIds = availableStatsIds.subList(0, 100);
 
         List<Integer> existingPlayerIds = queryFactory.from(playerOnMapResults)
                 .select(playerOnMapResults.playerId)
@@ -135,22 +138,58 @@ public class CalculatingService {
 
         List<PlayerForce> allPlayerForces = playerForceRepository.findAllById(playerIdsFromForceTable).stream().toList();
         Map<Integer, List<PlayerForce>> playerForcesMap = allPlayerForces.stream().collect(Collectors.groupingBy(e -> e.playerId));
-
-        for(Integer id : availableStatsIds) {
+        long now = System.currentTimeMillis();
+        for (Integer id : availableStatsIds) {
             List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
                     queryFactory.from(playerOnMapResults)
-                    .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+                            .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+            List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
+            List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                     .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
             List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
             players.forEach(player -> {
-                float force = calculator.calculatePlayerForce(player, forces, 1, 1, 0.5f, 1, 1);
+                float force = calculator.calculatePlayerForce(player, forces, 1,
+                        1, 0.1f, 1, 1, 0.05f,
+                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
                 playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
-//                playerForce.playerForce += force;
             });
         }
-        playerForceRepository.saveAll(allPlayerForces);
+        int epochs = 4;
+        for (int i = 0; i < epochs; i++) {
+            for (Integer id : availableStatsIds) {
+                List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
+                        queryFactory.from(playerOnMapResults)
+                                .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+                List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
+                List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
+                RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
+                        .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+                List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+                players.forEach(player -> {
+                    float force = calculator.calculatePlayerForce(player, forces, 1,
+                            1, 0.1f, 1, 1, 0.05f,
+                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                    playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                });
+                //подобие обратного распространения ошибки - считаем стабильность
+                List<PlayerForce> leftTeamForce = new ArrayList<>();
+                List<PlayerForce> rightTeamForce = new ArrayList<>();
+                players.forEach(p -> {
+                    if (p.team.equals("left")) {
+                        leftTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                    } else {
+                        rightTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                    }
+                });
+
+                stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+            }
+        }
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+        playerForceRepository.saveAll(allPlayerForces);
+        System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
     }
 }

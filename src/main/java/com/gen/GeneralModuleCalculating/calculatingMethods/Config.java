@@ -45,4 +45,7 @@ public class Config {
 
     // history
     public static float normalizingCoeffHistory = (float) (1.0/20);
+
+    // stability calculator
+    public static float stabilityCompareCoeff = 1.1f;
 }
