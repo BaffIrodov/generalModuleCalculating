@@ -2,6 +2,7 @@ package com.gen.GeneralModuleCalculating.services;
 
 import com.gen.GeneralModuleCalculating.calculatingMethods.*;
 import com.gen.GeneralModuleCalculating.common.MapsEnum;
+import com.gen.GeneralModuleCalculating.dtos.ImprovementRequestDto;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.readers.CalculatingReader;
@@ -129,7 +130,7 @@ public class CalculatingService {
         List<Integer> availableStatsIds = calculatingReader.getAvailableStatsIdsOrdered();
         List<Integer> existingPlayerIds = calculatingReader
                 .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIds);
-        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds);
+        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, false);
         List<PlayerForce> newList = new ArrayList<>();
         allPlayerForces.forEach(e -> {
             newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map));
@@ -155,7 +156,7 @@ public class CalculatingService {
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
-        int epochs = 0;
+        int epochs = 4;
         for (int i = 0; i < epochs; i++) {
             for (Integer id : availableStatsIds) {
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
@@ -191,12 +192,92 @@ public class CalculatingService {
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
     }
 
-    public void improvementTest(Integer testPercent) {
-        List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
-        List<Integer> availableStatsIdsTest = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
+    public void improvementTest(ImprovementRequestDto requestDto) {
+        Integer testPercent = requestDto.getTestDatasetPercent();
+        List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
+        List<Integer> availableStatsIdsTest = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
         List<Integer> existingPlayerIds = calculatingReader
                 .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIdsTrain);
-        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds);
-        int i = 0;
+        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, true);
+        List<PlayerForce> newList = new ArrayList<>();
+        allPlayerForces.forEach(e -> {
+            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map));
+        });
+
+        Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
+        long now = System.currentTimeMillis();
+        Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere =
+                queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
+        for (Integer id : availableStatsIdsTrain) {
+            List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
+            List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
+            List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
+            RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
+                    .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+            List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+            players.forEach(player -> {
+                float force = calculator.calculatePlayerForce(player, forces, 1,
+                        1, 0.1f, 1, 1, 0.05f,
+                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+            });
+        }
+        System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+        int epochs = 9;
+        for (int i = 0; i < epochs; i++) {
+            for (Integer id : availableStatsIdsTrain) {
+                List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
+                List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
+                List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
+                RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
+                        .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+                List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+                players.forEach(player -> {
+                    float force = calculator.calculatePlayerForce(player, forces, 1,
+                            1, 0.1f, 1, 1, 0.05f,
+                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                    playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                });
+                //подобие обратного распространения ошибки - считаем стабильность
+                List<PlayerForce> leftTeamForce = new ArrayList<>();
+                List<PlayerForce> rightTeamForce = new ArrayList<>();
+                players.forEach(p -> {
+                    if (p.team.equals("left")) {
+                        leftTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                    } else {
+                        rightTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                    }
+                });
+
+                stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+            }
+
+            Integer rightAnswers = 0;
+            for (Integer id : availableStatsIdsTest) {
+                List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
+                Float leftForce = 0f;
+                Float rightForce = 0f;
+                for (PlayerOnMapResults p: players) {
+                    PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(p.playedMapString)).toList().get(0);
+                    if (p.team.equals("left")) {
+                        leftForce += (force.playerForce * force.playerStability) / 100;
+                    } else {
+                        rightForce += (force.playerForce * force.playerStability) / 100;
+                    }
+                }
+                String winner = players.get(0).teamWinner;
+                if((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
+                    rightAnswers++;
+                }
+            }
+            System.out.println("Эпоха номер: " + (i+1) + "На " + availableStatsIdsTest.size() +
+                    " матчей приходится " + rightAnswers +
+                    " правильных ответов! Процент точности равен " +
+                    (float) rightAnswers/availableStatsIdsTest.size());
+        }
+        //TODO НАДО УЧИТЫВАТЬ ПРИ РАСЧЕТЕ СИЛУ НЕ ТОЛЬКО НА ЭТОЙ КАРТЕ, НО И НА ДРУГИХ
+        System.out.println("Вторичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
     }
 }

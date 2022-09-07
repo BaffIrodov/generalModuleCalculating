@@ -13,17 +13,21 @@ public class RoundHistoryCalculator {
         Float leftForce = 0f;
         Float rightForce = 0f;
         char[] chars = roundSequence.toCharArray();
-        List<Character> firstHalf = getFirstHalf(chars);
-        List<Character> secondHalf = getSecondHalf(chars);
-        if(leftTeamIsTerroristsInFirstHalf == null) leftTeamIsTerroristsInFirstHalf = true;
-        List<Float> firstHalfRes = calculateFirstHalf(firstHalf, leftTeamIsTerroristsInFirstHalf);
-        List<Float> secondHalfRes = calculateSecondHalf(secondHalf, leftTeamIsTerroristsInFirstHalf);
-        leftForce = firstHalfRes.get(0) + secondHalfRes.get(0);
-        rightForce = firstHalfRes.get(1) + secondHalfRes.get(1);
-        float average = (leftForce + rightForce) / 2;
-        leftForce =  (leftForce - average) * Config.normalizingCoeffHistory;
-        rightForce = (rightForce - average) * Config.normalizingCoeffHistory;
-        return new ArrayList<>(Arrays.asList(leftForce, rightForce));
+        if(chars.length > 16) {
+            List<Character> firstHalf = getFirstHalf(chars);
+            List<Character> secondHalf = getSecondHalf(chars);
+            if (leftTeamIsTerroristsInFirstHalf == null) leftTeamIsTerroristsInFirstHalf = true;
+            List<Float> firstHalfRes = calculateFirstHalf(firstHalf, leftTeamIsTerroristsInFirstHalf);
+            List<Float> secondHalfRes = calculateSecondHalf(secondHalf, leftTeamIsTerroristsInFirstHalf);
+            leftForce = firstHalfRes.get(0) + secondHalfRes.get(0);
+            rightForce = firstHalfRes.get(1) + secondHalfRes.get(1);
+            float average = (leftForce + rightForce) / 2;
+            leftForce = (leftForce - average) * Config.normalizingCoeffHistory;
+            rightForce = (rightForce - average) * Config.normalizingCoeffHistory;
+            return new ArrayList<>(Arrays.asList(leftForce, rightForce));
+        } else { //сломанные матчи (проводят какие-то обрубки)
+            return new ArrayList<>(Arrays.asList(0f, 0f));
+        }
     }
 
     private List<Float> calculateFirstHalf(List<Character> firstHalf, Boolean leftIsTer) {

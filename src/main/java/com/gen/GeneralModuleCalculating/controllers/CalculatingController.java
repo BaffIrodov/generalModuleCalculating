@@ -1,5 +1,6 @@
 package com.gen.GeneralModuleCalculating.controllers;
 
+import com.gen.GeneralModuleCalculating.dtos.ImprovementRequestDto;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.entities.Errors;
 import com.gen.GeneralModuleCalculating.services.CalculatingService;
@@ -44,9 +45,9 @@ public class CalculatingController {
         return (System.currentTimeMillis() - now);
     }
 
-    @GetMapping("/improvement/{test-dataset-percent}")
-    public void improvementTest(@PathVariable("test-dataset-percent") int testPercent) {
-        calculatingService.improvementTest(testPercent);
+    @PostMapping("/improvement")
+    public void improvementTest(@RequestBody ImprovementRequestDto request) {
+        calculatingService.improvementTest(request);
     }
 
 }

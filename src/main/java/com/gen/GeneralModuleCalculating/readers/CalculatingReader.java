@@ -2,6 +2,7 @@ package com.gen.GeneralModuleCalculating.readers;
 
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,7 @@ public class CalculatingReader {
                 .fetch();
         Integer waterLineIndex = allIds.size() * testPercent / 100;
         List<Integer> testDatasetIds = allIds.subList(0, waterLineIndex);
-        List<Integer> trainDatasetIds = allIds.subList(waterLineIndex+1, allIds.size());
+        List<Integer> trainDatasetIds = allIds.subList(waterLineIndex, allIds.size());
         return isTestDataset? testDatasetIds: trainDatasetIds;
     }
 
@@ -60,9 +61,13 @@ public class CalculatingReader {
                 .fetch();
     }
 
-    public List<PlayerForce> getPlayerForceListByPlayerIds(List<Integer> existingPlayerIds) {
-        List<Integer> playerIdsFromForceTable = queryFactory.from(playerForce)
-                .select(playerForce.id).where(playerForce.playerId.in(existingPlayerIds)).fetch();
+    public List<PlayerForce> getPlayerForceListByPlayerIds(List<Integer> existingPlayerIds, Boolean isGettingAll) {
+        JPAQuery playerIdsFromForceTableQuery = queryFactory.from(playerForce)
+                .select(playerForce.id);
+        if(!isGettingAll) {
+            playerIdsFromForceTableQuery.where(playerForce.playerId.in(existingPlayerIds));
+        }
+        List<Integer> playerIdsFromForceTable = playerIdsFromForceTableQuery.fetch();
         // может быть большим числом >32k, надо нарезать
         List<PlayerForce> result = new ArrayList<>();
         if(playerIdsFromForceTable.size() > 30000) {
