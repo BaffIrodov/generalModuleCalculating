@@ -7,16 +7,15 @@ import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.readers.CalculatingReader;
 import com.gen.GeneralModuleCalculating.repositories.MapsCalculatingQueueRepository;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
+import com.querydsl.core.group.GroupBy;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.extern.log4j.Log4j2;
 import org.hibernate.criterion.Example;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -98,15 +97,17 @@ public class CalculatingService {
         //если ранее таблица не была инициирована
         if (queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()) {
             List<PlayerForce> playerForces = new ArrayList<>();
-            for (int i = 0; i < playerForceTableSize; i++) {
-                for (int map = 0; map < MapsEnum.values().length; map++) {
-                    //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
-                    PlayerForce playerForce = new PlayerForce();
-                    playerForce.playerId = i;
-                    playerForce.playerForce = playerForceDefault;
-                    playerForce.playerStability = playerStability;
-                    playerForce.map = Arrays.stream(MapsEnum.values()).toList().get(map).toString();
-                    playerForces.add(playerForce);
+            for (int map = 0; map < MapsEnum.values().length; map++) {
+                if(!Objects.equals(Arrays.stream(MapsEnum.values()).toList().get(map).toString(), "ALL")) {
+                    for (int i = 0; i < playerForceTableSize; i++) {
+                        //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
+                        PlayerForce playerForce = new PlayerForce();
+                        playerForce.playerId = i;
+                        playerForce.playerForce = playerForceDefault;
+                        playerForce.playerStability = playerStability;
+                        playerForce.map = Arrays.stream(MapsEnum.values()).toList().get(map).toString();
+                        playerForces.add(playerForce);
+                    }
                 }
             }
             playerForceRepository.saveAll(playerForces);
@@ -124,17 +125,22 @@ public class CalculatingService {
     }
 
     public void calculateForces() {
+        System.out.println("Расчет начался");
         List<Integer> availableStatsIds = calculatingReader.getAvailableStatsIdsOrdered();
         List<Integer> existingPlayerIds = calculatingReader
                 .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIds);
         List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds);
+        List<PlayerForce> newList = new ArrayList<>();
+        allPlayerForces.forEach(e -> {
+            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map));
+        });
 
-        Map<Integer, List<PlayerForce>> playerForcesMap = allPlayerForces.stream().collect(Collectors.groupingBy(e -> e.playerId));
+        Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
         long now = System.currentTimeMillis();
+        Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere =
+                queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
         for (Integer id : availableStatsIds) {
-            List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
-                    queryFactory.from(playerOnMapResults)
-                            .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+            List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
             List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
             List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
@@ -148,12 +154,11 @@ public class CalculatingService {
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
             });
         }
-        int epochs = 4;
+        System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+        int epochs = 0;
         for (int i = 0; i < epochs; i++) {
             for (Integer id : availableStatsIds) {
-                List<PlayerOnMapResults> players = (List<PlayerOnMapResults>)
-                        queryFactory.from(playerOnMapResults)
-                                .where(playerOnMapResults.idStatsMap.eq(id)).fetch();
+                List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
                 List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
                 RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
@@ -181,7 +186,8 @@ public class CalculatingService {
             }
         }
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
-        playerForceRepository.saveAll(allPlayerForces);
+        List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != 5 || e.playerStability != 100).toList();
+        playerForceRepository.saveAll(changed);
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
     }
 

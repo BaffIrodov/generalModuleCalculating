@@ -6,6 +6,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -55,13 +56,26 @@ public class CalculatingReader {
         return queryFactory.from(playerOnMapResults)
                 .select(playerOnMapResults.playerId)
                 .where(playerOnMapResults.idStatsMap.in(availableStatsIds))
+                .distinct() //не может быть сильно большим числом
                 .fetch();
     }
 
     public List<PlayerForce> getPlayerForceListByPlayerIds(List<Integer> existingPlayerIds) {
         List<Integer> playerIdsFromForceTable = queryFactory.from(playerForce)
                 .select(playerForce.id).where(playerForce.playerId.in(existingPlayerIds)).fetch();
-        return playerForceRepository.findAllById(playerIdsFromForceTable).stream().toList();
+        // может быть большим числом >32k, надо нарезать
+        List<PlayerForce> result = new ArrayList<>();
+        if(playerIdsFromForceTable.size() > 30000) {
+            int mpl = playerIdsFromForceTable.size() / 30000;
+            int size = playerIdsFromForceTable.size() / (mpl+1);
+            for(int i = 0; i < mpl+1; i++) {
+                List<Integer> subList = playerIdsFromForceTable.subList(i*(size), (i+1)*(size));
+                result.addAll(playerForceRepository.findAllById(subList).stream().toList());
+            }
+            return result;
+        } else {
+            return playerForceRepository.findAllById(playerIdsFromForceTable).stream().toList();
+        }
     }
 
 

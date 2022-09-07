@@ -31,11 +31,16 @@ public class DebugService {
             new QPlayerForce("playerForce");
 
     public void resetAllPlayerForcesToDefault() {
+        System.out.println("Сброс всех сил плэйеров начался");
         long now = System.currentTimeMillis();
         List<PlayerForce> forces = playerForceRepository.findAll();
-        forces.forEach(p -> p.playerForce = 5f);
-        forces.forEach(p -> p.playerStability = 100);
-        playerForceRepository.saveAll(forces);
+        List<PlayerForce> newList = new ArrayList<>();
+        forces.forEach(f -> {
+            if(f.playerForce != 5f || f.playerStability != 100) {
+                newList.add(new PlayerForce(f.id, f.playerId, 5f, 100, f.map));
+            }
+        });
+        playerForceRepository.saveAll(newList);
         System.out.println("Сброс всех сил плэйеров занял: " + (System.currentTimeMillis() - now) + " мс");
     }
 
