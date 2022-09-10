@@ -30,33 +30,34 @@ public class RoundHistoryCalculator {
         }
     }
 
+    //TODO перенесен не до конца
     private List<Float> calculateFirstHalf(List<Character> firstHalf, Boolean leftIsTer) {
         Float leftForce = 0f;
         int leftWinStreak = 0;
         Float rightForce = 0f;
         int rightWinStreak = 0;
         if(firstHalf.get(0) == 'L') {
-            leftForce+=5; leftWinStreak ++;
+            leftForce+=5; leftWinStreak++;
         } else {
             rightForce+=5; rightWinStreak++;
         }
         for (int index = 1; index < 15; index++) {
             if(firstHalf.get(index) == 'L') {
+                leftWinStreak++;
                 if(!leftIsTer) { //левые ктшники и выиграли. В зависимости от разного винстрика правых начисляем баллы
-                    leftForce = ctForceCalculate(rightWinStreak, leftForce);
+                    leftForce = ctForceCalculate(leftWinStreak, leftForce);
                 } else { //левые тшники и выиграли
-                    leftForce = tForceCalculate(rightWinStreak, leftForce);
+                    leftForce = tForceCalculate(leftWinStreak, leftForce);
                 }
                 rightWinStreak = 0;
-                leftWinStreak++;
             } else {
+                rightWinStreak++;
                 if(!leftIsTer) { //левые ктшники и проиграли. В зависимости от разного винстрика левых начисляем баллы
-                    rightForce = tForceCalculate(leftWinStreak, rightForce);
+                    rightForce = tForceCalculate(rightWinStreak, rightForce);
                 } else { //левые тшники и проиграли
-                    rightForce = ctForceCalculate(leftWinStreak, rightForce);
+                    rightForce = ctForceCalculate(rightWinStreak, rightForce);
                 }
                 leftWinStreak = 0;
-                rightWinStreak++;
             }
         }
         return new ArrayList<>(Arrays.asList(leftForce, rightForce));
@@ -74,28 +75,28 @@ public class RoundHistoryCalculator {
         }
         for (int index = 1; index < secondHalf.size(); index++) {
             if(secondHalf.get(index) == 'L') {
+                leftWinStreak++;
                 if(leftIsTer) { //левые ктшники (были террами в 1ой половине) и выиграли. В зависимости от разного винстрика правых начисляем баллы
-                    leftForce = ctForceCalculate(rightWinStreak, leftForce);
+                    leftForce = ctForceCalculate(leftWinStreak, leftForce);
                 } else { //левые тшники (не были террами в 1ой половине) и выиграли
-                    leftForce = tForceCalculate(rightWinStreak, leftForce);
+                    leftForce = tForceCalculate(leftWinStreak, leftForce);
                 }
                 rightWinStreak = 0;
-                leftWinStreak++;
             } else {
+                rightWinStreak++;
                 if(leftIsTer) { //левые ктшники (были террами в 1ой половине) и проиграли. В зависимости от разного винстрика левых начисляем баллы
-                    rightForce = tForceCalculate(leftWinStreak, rightForce);
+                    rightForce = tForceCalculate(rightWinStreak, rightForce);
                 } else { //левые тшники (не были террами в 1ой половине) и проиграли
-                    rightForce = ctForceCalculate(leftWinStreak, rightForce);
+                    rightForce = ctForceCalculate(rightWinStreak, rightForce);
                 }
                 leftWinStreak = 0;
-                rightWinStreak++;
             }
         }
         return new ArrayList<>(Arrays.asList(leftForce, rightForce));
     }
 
-    private Float ctForceCalculate(int enemyWinStreak, Float teamForce) {
-        switch (enemyWinStreak) {
+    private Float ctForceCalculate(int ourWinStreak, Float teamForce) {
+        switch (ourWinStreak) {
             case 1 -> teamForce+=3; //сразу после проигрыша, тяжело взять раунд - у кт экономика проседает, у терров - поменьше
             case 2 -> teamForce+=4; //даже если были деньги после первого поражения, после второго их сильно меньше
             case 3 -> teamForce+=2; //после двух поражений уже нормально сыпят денег - у кт появляются девайсы
@@ -106,8 +107,8 @@ public class RoundHistoryCalculator {
         return teamForce;
     }
 
-    private Float tForceCalculate(int enemyWinStreak, Float teamForce) {
-        switch (enemyWinStreak) {
+    private Float tForceCalculate(int ourWinStreak, Float teamForce) {
+        switch (ourWinStreak) {
             case 1 -> teamForce+=3; //сразу после проигрыша, тяжело взять раунд - у т экономика тоже проседает, пусть и меньше
             case 2 -> teamForce+=3; //террам проще сделать форс, плюс они могли поставить бомбу или выбить много девайсов у кт (дорогих!)
             case 3 -> teamForce+=1.5f; //закуп терров дешевле
