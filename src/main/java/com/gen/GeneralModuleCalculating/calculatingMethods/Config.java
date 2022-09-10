@@ -13,6 +13,9 @@ public class Config {
      * x^0.6 - для обеих осей
      */
 
+    // global calculating settings
+    public static int calculatingStatsIdNumber = 0; //Сколько забираем из базы последних игр. 0 - забираем всё
+
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент
     public static float zeroCoeffFuncAdr = (float) (0); //коэффициент возле члена с нулевой степенью в полиноме
@@ -55,4 +58,11 @@ public class Config {
 
     // active maps
     public static List<Integer> activeMaps = Arrays.asList(1,2,3,4,5,6,7);
+    public static boolean isConsiderActiveMaps = true; // Если true - считаем силу игрока не только по этой карте, но и по всем, которые есть в ротации
+
+
+    // player force table init
+    public static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
+    public static float playerForceDefault = 5; //Дефолтная сила игроков
+    public static int playerStability = 100; //Дефолтная стабильность игроков
 }

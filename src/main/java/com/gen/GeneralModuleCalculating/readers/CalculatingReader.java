@@ -1,5 +1,6 @@
 package com.gen.GeneralModuleCalculating.readers;
 
+import com.gen.GeneralModuleCalculating.calculatingMethods.Config;
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.jpa.impl.JPAQuery;
@@ -30,13 +31,18 @@ public class CalculatingReader {
     PlayerForceRepository playerForceRepository;
 
     public List<Integer> getAvailableStatsIdsOrdered() {
-        return queryFactory.from(mapsCalculatingQueue)
+        List<Integer> availableStats = queryFactory.from(mapsCalculatingQueue)
                 .leftJoin(roundHistory).on(mapsCalculatingQueue.idStatsMap
                         .eq(roundHistory.idStatsMap))
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
                 .orderBy(roundHistory.dateOfMatch.asc())
                 .fetch();
+        if(Config.calculatingStatsIdNumber != 0) {
+            availableStats = availableStats
+                    .subList(availableStats.size() - Config.calculatingStatsIdNumber, availableStats.size());
+        }
+        return availableStats;
     }
 
     public List<Integer> getAvailableStatsIdsOrderedDataset(Integer testPercent, Boolean isTestDataset) {

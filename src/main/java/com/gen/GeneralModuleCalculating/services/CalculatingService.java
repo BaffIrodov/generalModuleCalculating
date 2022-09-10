@@ -66,10 +66,6 @@ public class CalculatingService {
     private static final QMapsCalculatingQueue mapsCalculatingQueue =
             new QMapsCalculatingQueue("mapsCalculatingQueue");
 
-    private static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
-    private static float playerForceDefault = 5; //Дефолтная сила игроков
-    private static int playerStability = 100; //Дефолтная стабильность игроков
-
     public MapsCalculatingQueueResponseDto createQueue() {
         long now = System.currentTimeMillis();
         MapsCalculatingQueueResponseDto result = new MapsCalculatingQueueResponseDto();
@@ -100,12 +96,12 @@ public class CalculatingService {
             List<PlayerForce> playerForces = new ArrayList<>();
             for (int map = 0; map < MapsEnum.values().length; map++) {
                 if(!Objects.equals(Arrays.stream(MapsEnum.values()).toList().get(map).toString(), "ALL")) {
-                    for (int i = 0; i < playerForceTableSize; i++) {
+                    for (int i = 0; i < Config.playerForceTableSize; i++) {
                         //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
                         PlayerForce playerForce = new PlayerForce();
                         playerForce.playerId = i;
-                        playerForce.playerForce = playerForceDefault;
-                        playerForce.playerStability = playerStability;
+                        playerForce.playerForce = Config.playerForceDefault;
+                        playerForce.playerStability = Config.playerStability;
                         playerForce.map = Arrays.stream(MapsEnum.values()).toList().get(map).toString();
                         playerForces.add(playerForce);
                     }
@@ -277,15 +273,17 @@ public class CalculatingService {
                     }
                 }
                 // второстепенные карты
-                for (PlayerOnMapResults p: players) {
-                    for(int j = 0; j < 7; j++) {
-                        int currentMap = Config.activeMaps.get(j);
-                        String currentMapString = MapsEnum.values()[currentMap].toString();
-                        PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(currentMapString)).toList().get(0);
-                        if (p.team.equals("left")) {
-                            leftForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
-                        } else {
-                            rightForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                if(Config.isConsiderActiveMaps) {
+                    for (PlayerOnMapResults p : players) {
+                        for (int j = 0; j < 7; j++) {
+                            int currentMap = Config.activeMaps.get(j);
+                            String currentMapString = MapsEnum.values()[currentMap].toString();
+                            PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(currentMapString)).toList().get(0);
+                            if (p.team.equals("left")) {
+                                leftForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                            } else {
+                                rightForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                            }
                         }
                     }
                 }
