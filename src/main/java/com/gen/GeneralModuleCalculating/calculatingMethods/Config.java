@@ -1,5 +1,9 @@
 package com.gen.GeneralModuleCalculating.calculatingMethods;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class Config {
 
     /**
@@ -48,4 +52,7 @@ public class Config {
 
     // stability calculator
     public static float stabilityCompareCoeff = 1.1f;
+
+    // active maps
+    public static List<Integer> activeMaps = Arrays.asList(1,2,3,4,5,6,7);
 }

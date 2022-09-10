@@ -35,7 +35,7 @@ public class CalculatingReader {
                         .eq(roundHistory.idStatsMap))
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
-                .orderBy(roundHistory.dateOfMatch.desc())
+                .orderBy(roundHistory.dateOfMatch.asc())
                 .fetch();
     }
 
@@ -45,7 +45,7 @@ public class CalculatingReader {
                         .eq(roundHistory.idStatsMap))
                 .select(mapsCalculatingQueue.idStatsMap)
                 .where(mapsCalculatingQueue.processed.eq(false))
-                .orderBy(roundHistory.dateOfMatch.desc())
+                .orderBy(roundHistory.dateOfMatch.asc())
                 .fetch();
         Integer waterLineIndex = allIds.size() * testPercent / 100;
         List<Integer> testDatasetIds = allIds.subList(0, waterLineIndex);

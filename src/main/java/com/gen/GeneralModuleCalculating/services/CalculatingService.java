@@ -177,9 +177,13 @@ public class CalculatingService {
                 List<PlayerForce> rightTeamForce = new ArrayList<>();
                 players.forEach(p -> {
                     if (p.team.equals("left")) {
-                        leftTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                        leftTeamForce.add(playerForcesMap.get(p.playerId)
+                                .stream().filter(e -> e.map.equals(p.playedMapString))
+                                .toList().get(0));
                     } else {
-                        rightTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                        rightTeamForce.add(playerForcesMap.get(p.playerId)
+                                .stream().filter(e -> e.map.equals(p.playedMapString))
+                                .toList().get(0));
                     }
                 });
 
@@ -245,9 +249,13 @@ public class CalculatingService {
                 List<PlayerForce> rightTeamForce = new ArrayList<>();
                 players.forEach(p -> {
                     if (p.team.equals("left")) {
-                        leftTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                        leftTeamForce.add(playerForcesMap.get(p.playerId)
+                                .stream().filter(e -> e.map.equals(p.playedMapString))
+                                .toList().get(0));
                     } else {
-                        rightTeamForce.add(playerForcesMap.get(p.playerId).get(0));
+                        rightTeamForce.add(playerForcesMap.get(p.playerId)
+                                .stream().filter(e -> e.map.equals(p.playedMapString))
+                                .toList().get(0));
                     }
                 });
 
@@ -259,6 +267,7 @@ public class CalculatingService {
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 Float leftForce = 0f;
                 Float rightForce = 0f;
+                // основная карта
                 for (PlayerOnMapResults p: players) {
                     PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(p.playedMapString)).toList().get(0);
                     if (p.team.equals("left")) {
@@ -267,17 +276,32 @@ public class CalculatingService {
                         rightForce += (force.playerForce * force.playerStability) / 100;
                     }
                 }
+                // второстепенные карты
+                for (PlayerOnMapResults p: players) {
+                    for(int j = 0; j < 7; j++) {
+                        int currentMap = Config.activeMaps.get(j);
+                        String currentMapString = MapsEnum.values()[currentMap].toString();
+                        PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(currentMapString)).toList().get(0);
+                        if (p.team.equals("left")) {
+                            leftForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                        } else {
+                            rightForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                        }
+                    }
+                }
                 String winner = players.get(0).teamWinner;
                 if((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
                     rightAnswers++;
                 }
             }
-            System.out.println("Эпоха номер: " + (i+1) + "На " + availableStatsIdsTest.size() +
+            System.out.println("Эпоха номер: " + (i+1) + ". На " + availableStatsIdsTest.size() +
                     " матчей приходится " + rightAnswers +
                     " правильных ответов! Процент точности равен " +
                     (float) rightAnswers/availableStatsIdsTest.size());
         }
-        //TODO НАДО УЧИТЫВАТЬ ПРИ РАСЧЕТЕ СИЛУ НЕ ТОЛЬКО НА ЭТОЙ КАРТЕ, НО И НА ДРУГИХ
+        //TODO надо увеличивать влияние последних матчей, и уменьшать влияние первых
+        //TODO надо сделать ограничение сил - снизу 0
+        //TODO именно в процессе расчета предикта меняются кожффициенты для достижения консенсуса! Консенсус выкидывает ненадежные матчи!
         System.out.println("Вторичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
     }
 }
