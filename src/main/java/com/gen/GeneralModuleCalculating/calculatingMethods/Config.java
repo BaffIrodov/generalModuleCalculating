@@ -1,9 +1,12 @@
 package com.gen.GeneralModuleCalculating.calculatingMethods;
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Data
 public class Config {
 
     /**
@@ -15,6 +18,13 @@ public class Config {
 
     // global calculating settings
     public static int calculatingStatsIdNumber = 0; //Сколько забираем из базы последних игр. 0 - забираем всё
+    public static int epochsNumber = 5; //количество эпох при расчете
+    public static float adrMultiplier = 1;
+    public static float killsMultiplier = 1;
+    public static float headshotsMultiplier = 0.1f;
+    public static float ratingMultiplier = 1;
+    public static float historyMultiplier = 1;
+    public static float forceTeamMultiplier = 0.05f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент
