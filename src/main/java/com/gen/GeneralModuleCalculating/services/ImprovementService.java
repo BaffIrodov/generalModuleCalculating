@@ -137,6 +137,7 @@ public class ImprovementService {
             }
 
             Integer rightAnswers = 0;
+            Integer nonRightAnswers = 0;
             for (Integer id : availableStatsIdsTest) {
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 Float leftForce = 0f;

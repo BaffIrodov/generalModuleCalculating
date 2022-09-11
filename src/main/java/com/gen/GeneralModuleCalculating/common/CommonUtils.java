@@ -32,10 +32,16 @@ public class CommonUtils {
         return splittedString[idPosition];
     }
 
-    public static void resetConfig(Map<String, Object> config) {
+    public String helpInt(Map<String, Object> config, String name) {
+        return (config.get(name).toString().contains(".")?
+                config.get(name).toString().replaceAll("[^.]*$", "").replace(".", ""):
+                config.get(name).toString());
+    }
+
+    public void resetConfig(Map<String, Object> config) {
         Config.isConsiderActiveMaps = Boolean.getBoolean(config.get("isConsiderActiveMaps").toString());
-        Config.epochsNumber = Integer.parseInt(config.get("epochsNumber").toString());
-        Config.calculatingStatsIdNumber = Integer.parseInt(config.get("calculatingStatsIdNumber").toString());
+        Config.epochsNumber = Integer.parseInt(this.helpInt(config, "epochsNumber"));
+        Config.calculatingStatsIdNumber = Integer.parseInt(this.helpInt(config, "calculatingStatsIdNumber"));
         Config.adrMultiplier = Float.parseFloat(config.get("adrMultiplier").toString());
         Config.killsMultiplier = Float.parseFloat(config.get("killsMultiplier").toString());
         Config.headshotsMultiplier = Float.parseFloat(config.get("headshotsMultiplier").toString());
@@ -70,9 +76,9 @@ public class CommonUtils {
         Config.normalizingCoeffHistory = Float.parseFloat(config.get("normalizingCoeffHistory").toString());
         Config.stabilityCompareCoeff = Float.parseFloat(config.get("stabilityCompareCoeff").toString());
         Config.isConsiderActiveMaps = Boolean.getBoolean(config.get("isConsiderActiveMaps").toString());
-        Config.playerForceTableSize = Integer.parseInt(config.get("playerForceTableSize").toString());
+        Config.playerForceTableSize = Integer.parseInt(this.helpInt(config, "playerForceTableSize"));
         Config.playerForceDefault = Float.parseFloat(config.get("playerForceDefault").toString());
-        Config.playerStability = Integer.parseInt(config.get("playerStability").toString());
+        Config.playerStability = Integer.parseInt(this.helpInt(config, "playerStability"));
     }
 
     public static Map<String, Object> invokeConfig() {
@@ -115,7 +121,7 @@ public class CommonUtils {
         mapValueByFieldName.put("stabilityCompareCoeff", Config.stabilityCompareCoeff);
         mapValueByFieldName.put("playerForceTableSize", Config.playerForceTableSize);
         mapValueByFieldName.put("playerForceDefault", Config.playerForceDefault);
-        mapValueByFieldName.put("playerStability", Config.playerForceDefault);
+        mapValueByFieldName.put("playerStability", Config.playerStability);
         return mapValueByFieldName;
     }
 }
