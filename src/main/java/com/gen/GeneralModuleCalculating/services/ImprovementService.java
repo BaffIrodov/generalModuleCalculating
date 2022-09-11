@@ -64,6 +64,7 @@ public class ImprovementService {
             new QMapsCalculatingQueue("mapsCalculatingQueue");
 
     public void improvementTest(ImprovementRequestDto requestDto) {
+        System.out.println("improvement started");
         Integer testPercent = requestDto.getTestDatasetPercent();
         List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
         List<Integer> availableStatsIdsTest = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
@@ -77,9 +78,12 @@ public class ImprovementService {
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
         long now = System.currentTimeMillis();
+        Integer currectId = 0;
         Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere =
                 queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
         for (Integer id : availableStatsIdsTrain) {
+            currectId++;
+            Integer finalCurrectId = currectId;
             List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
             List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
             List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
@@ -89,15 +93,18 @@ public class ImprovementService {
             players.forEach(player -> {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
-                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
                 playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+        currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
             for (Integer id : availableStatsIdsTrain) {
+                currectId++;
+                Integer finalCurrectId = currectId;
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
                 List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
@@ -107,7 +114,7 @@ public class ImprovementService {
                 players.forEach(player -> {
                     float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                             Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
-                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
                     playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
                 });
@@ -168,7 +175,6 @@ public class ImprovementService {
                     " правильных ответов! Процент точности равен " +
                     (float) rightAnswers/availableStatsIdsTest.size());
         }
-        //TODO надо увеличивать влияние последних матчей, и уменьшать влияние первых
         //TODO надо сделать ограничение сил - снизу 0
         //TODO именно в процессе расчета предикта меняются кожффициенты для достижения консенсуса! Консенсус выкидывает ненадежные матчи!
         System.out.println("Вторичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");

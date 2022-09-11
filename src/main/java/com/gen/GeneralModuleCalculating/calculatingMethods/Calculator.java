@@ -4,6 +4,7 @@ import com.gen.GeneralModuleCalculating.dtos.PlayerWithForce;
 import com.gen.GeneralModuleCalculating.entities.PlayerForce;
 import com.gen.GeneralModuleCalculating.entities.PlayerOnMapResults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -33,7 +34,8 @@ public class Calculator {
                                       float headshotsMultiplier, float ratingMultiplier,
                                       float historyMultiplier, float forceTeamMultiplier,
                                       boolean isFirstCalculation, List<PlayerOnMapResults> enemyTeam,
-                                      Map<Integer, List<PlayerForce>> playerForcesMap) {
+                                      Map<Integer, List<PlayerForce>> playerForcesMap, Integer currentStatsIdNumber,
+                                      Integer allStatsIdNumber) {
         float forceFromHistory;
         if(player.team.equals("left")) {
             forceFromHistory = forcesHistory.get(0);
@@ -45,12 +47,15 @@ public class Calculator {
         float headshots = headshotsCalculator.getForceByHeadshots(player);
         float rating = rating20Calculator.getForceByRating20(player);
         float forceEnemyTeam = !isFirstCalculation? forceTeamCalculator.getForceTeam(enemyTeam, playerForcesMap) : 0f;
-        return adr * adrMultiplier +
+        //для начала выборки будет 0.9, конец выборки - 1.1
+        float actualityMultiplier = (float) ((currentStatsIdNumber/(allStatsIdNumber * 5)) + 0.9);
+        return actualityMultiplier *
+                (adr * adrMultiplier +
                 kills * killsMultiplier +
                 headshots * headshotsMultiplier +
                 rating * ratingMultiplier +
                 forceFromHistory * historyMultiplier +
-                forceEnemyTeam * forceTeamMultiplier;
+                forceEnemyTeam * forceTeamMultiplier);
     }
 
     public float calculateTeamForce(List<PlayerWithForce> players, List<Float> forces, Boolean teamIsLeft) {

@@ -53,6 +53,10 @@ public class CalculatingReader {
                 .where(mapsCalculatingQueue.processed.eq(false))
                 .orderBy(roundHistory.dateOfMatch.asc())
                 .fetch();
+        if(Config.calculatingStatsIdNumber != 0) {
+            allIds = allIds
+                    .subList(allIds.size() - Config.calculatingStatsIdNumber, allIds.size());
+        }
         Integer waterLineIndex = allIds.size() * testPercent / 100;
         List<Integer> testDatasetIds = allIds.subList(0, waterLineIndex);
         List<Integer> trainDatasetIds = allIds.subList(waterLineIndex, allIds.size());

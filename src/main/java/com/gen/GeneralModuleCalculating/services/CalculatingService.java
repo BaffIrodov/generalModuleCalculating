@@ -134,9 +134,12 @@ public class CalculatingService {
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
         long now = System.currentTimeMillis();
+        Integer currectId = 0;
         Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere =
                 queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
         for (Integer id : availableStatsIds) {
+            currectId++;
+            Integer finalCurrectId = currectId;
             List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
             List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
             List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
@@ -146,15 +149,18 @@ public class CalculatingService {
             players.forEach(player -> {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
-                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                        true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
                 playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
-        int epochs = 4;
+        int epochs = Config.epochsNumber;
+        currectId = 0;
         for (int i = 0; i < epochs; i++) {
             for (Integer id : availableStatsIds) {
+                currectId++;
+                Integer finalCurrectId = currectId;
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
                 List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
@@ -164,7 +170,7 @@ public class CalculatingService {
                 players.forEach(player -> {
                     float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                             Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
-                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap);
+                            false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
                     playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
                 });
