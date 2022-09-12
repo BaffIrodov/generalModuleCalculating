@@ -73,6 +73,6 @@ public class Config {
 
     // player force table init
     public static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
-    public static float playerForceDefault = 5; //Дефолтная сила игроков
+    public static float playerForceDefault = 50; //Дефолтная сила игроков
     public static int playerStability = 100; //Дефолтная стабильность игроков
 }

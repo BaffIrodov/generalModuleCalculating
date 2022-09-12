@@ -58,6 +58,17 @@ public class Calculator {
                 forceEnemyTeam * forceTeamMultiplier);
     }
 
+    public float correctLowAndHighLimit(float playerForceFloat) {
+        if(playerForceFloat > 300) {
+            return 300;
+        }
+        else if(playerForceFloat < 0) {
+            return 0;
+        } else {
+            return playerForceFloat;
+        }
+    }
+
     public float calculateTeamForce(List<PlayerWithForce> players, List<Float> forces, Boolean teamIsLeft) {
         float result = 0f;
         for (PlayerWithForce player : players) {

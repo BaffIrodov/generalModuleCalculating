@@ -1,10 +1,12 @@
 package com.gen.GeneralModuleCalculating.services;
 
 import com.gen.GeneralModuleCalculating.calculatingMethods.*;
+import com.gen.GeneralModuleCalculating.common.CommonUtils;
 import com.gen.GeneralModuleCalculating.common.MapsEnum;
 import com.gen.GeneralModuleCalculating.dtos.ImprovementRequestDto;
 import com.gen.GeneralModuleCalculating.entities.*;
 import com.gen.GeneralModuleCalculating.readers.CalculatingReader;
+import com.gen.GeneralModuleCalculating.repositories.ImprovementResultsRepository;
 import com.gen.GeneralModuleCalculating.repositories.MapsCalculatingQueueRepository;
 import com.gen.GeneralModuleCalculating.repositories.PlayerForceRepository;
 import com.querydsl.core.group.GroupBy;
@@ -25,6 +27,9 @@ public class ImprovementService {
 
     @Autowired
     PlayerForceRepository playerForceRepository;
+
+    @Autowired
+    ImprovementResultsRepository improvementResultsRepository;
 
     @Autowired
     AdrCalculator adrCalculator;
@@ -64,6 +69,7 @@ public class ImprovementService {
             new QMapsCalculatingQueue("mapsCalculatingQueue");
 
     public void improvementTest(ImprovementRequestDto requestDto) {
+        Map<String, Object> mapForThisImprovement = CommonUtils.invokeConfig();
         System.out.println("improvement started");
         Integer testPercent = requestDto.getTestDatasetPercent();
         List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
@@ -96,6 +102,11 @@ public class ImprovementService {
                         true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
                 playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                //Задаю лимиты для силы
+                playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
+                        calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
+                                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
@@ -117,6 +128,11 @@ public class ImprovementService {
                             false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
                     playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                    //Задаю лимиты для силы
+                    playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
+                            calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
+                                    .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -171,6 +187,7 @@ public class ImprovementService {
                     rightAnswers++;
                 }
             }
+            saveImprovementResult(rightAnswers, availableStatsIdsTest.size(), mapForThisImprovement, i+1);
             System.out.println("Эпоха номер: " + (i+1) + ". На " + availableStatsIdsTest.size() +
                     " матчей приходится " + rightAnswers +
                     " правильных ответов! Процент точности равен " +
@@ -179,5 +196,16 @@ public class ImprovementService {
         //TODO надо сделать ограничение сил - снизу 0
         //TODO именно в процессе расчета предикта меняются кожффициенты для достижения консенсуса! Консенсус выкидывает ненадежные матчи!
         System.out.println("Вторичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+    }
+
+    private void saveImprovementResult(int rightAnswers, int availableStatsIdsSize, Map<String, Object> mapForThisImprovement,
+                                       int currentEpoch) {
+        ImprovementResults improvementResults = new ImprovementResults();
+        improvementResults.accuracy = (float) rightAnswers/availableStatsIdsSize;
+        improvementResults.currentEpoch = currentEpoch;
+        improvementResults.rightCount = rightAnswers;
+        improvementResults.allCount = availableStatsIdsSize;
+        improvementResults.fullConfig = mapForThisImprovement.toString();
+        improvementResultsRepository.save(improvementResults);
     }
 }
