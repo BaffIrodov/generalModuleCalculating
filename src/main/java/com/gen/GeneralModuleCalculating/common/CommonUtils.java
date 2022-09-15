@@ -82,7 +82,7 @@ public class CommonUtils {
     }
 
     public static Map<String, Object> invokeConfig() {
-        Map<String, Object> mapValueByFieldName = new HashMap<>();
+        Map<String, Object> mapValueByFieldName = new LinkedHashMap<>();
         mapValueByFieldName.put("isConsiderActiveMaps", Config.isConsiderActiveMaps);
         mapValueByFieldName.put("epochsNumber", Config.epochsNumber);
         mapValueByFieldName.put("calculatingStatsIdNumber", Config.calculatingStatsIdNumber);
