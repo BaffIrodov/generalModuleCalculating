@@ -153,13 +153,16 @@ public class ImprovementService {
             }
 
             Integer rightAnswers = 0;
-            Integer nonRightAnswers = 0;
+            Integer percentRightAnswers = 0;
+            Integer percentAllAnswers = 0;
+            Integer constRightAnswers = 0;
+            Integer constAllAnswers = 0;
             for (Integer id : availableStatsIdsTest) {
                 List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
                 Float leftForce = 0f;
                 Float rightForce = 0f;
                 // основная карта
-                for (PlayerOnMapResults p: players) {
+                for (PlayerOnMapResults p : players) {
                     PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(p.playedMapString)).toList().get(0);
                     if (p.team.equals("left")) {
                         leftForce += (force.playerForce * force.playerStability) / 100;
@@ -168,7 +171,7 @@ public class ImprovementService {
                     }
                 }
                 // второстепенные карты
-                if(Config.isConsiderActiveMaps) {
+                if (Config.isConsiderActiveMaps) {
                     for (PlayerOnMapResults p : players) {
                         for (int j = 0; j < 7; j++) {
                             int currentMap = Config.activeMaps.get(j);
@@ -183,15 +186,31 @@ public class ImprovementService {
                     }
                 }
                 String winner = players.get(0).teamWinner;
-                if((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
+                if ((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
                     rightAnswers++;
                 }
+                if ((leftForce > rightForce * 1.5) || (rightForce > leftForce * 1.5)) percentAllAnswers++;
+                if ((leftForce > rightForce * 1.5 && winner.equals("left")) || (rightForce > leftForce * 1.5 && winner.equals("right"))) {
+                    percentRightAnswers++;
+                }
+                if ((leftForce > rightForce + 100) || (rightForce > leftForce + 100)) constAllAnswers++;
+                if ((leftForce > rightForce + 100 && winner.equals("left")) || (rightForce > leftForce + 100 && winner.equals("right"))) {
+                    constRightAnswers++;
+                }
             }
-            saveImprovementResult(rightAnswers, availableStatsIdsTest.size(), mapForThisImprovement, i+1);
-            System.out.println("Эпоха номер: " + (i+1) + ". На " + availableStatsIdsTest.size() +
+            saveImprovementResult(rightAnswers, availableStatsIdsTest.size(), mapForThisImprovement, i + 1);
+            System.out.println("Эпоха номер: " + (i + 1) + ". На " + availableStatsIdsTest.size() +
                     " матчей приходится " + rightAnswers +
                     " правильных ответов! Процент точности равен " +
-                    (float) rightAnswers/availableStatsIdsTest.size());
+                    (float) rightAnswers / availableStatsIdsTest.size());
+            System.out.println("(Процент) Эпоха номер: " + (i + 1) + ". На " + percentAllAnswers +
+                    " матчей приходится " + percentRightAnswers +
+                    " правильных ответов! Процент точности равен " +
+                    (float) percentRightAnswers / percentAllAnswers);
+            System.out.println("(Константа) Эпоха номер: " + (i + 1) + ". На " + constAllAnswers +
+                    " матчей приходится " + constRightAnswers +
+                    " правильных ответов! Процент точности равен " +
+                    (float) constRightAnswers / constAllAnswers);
         }
         //TODO надо сделать ограничение сил - снизу 0
         //TODO именно в процессе расчета предикта меняются кожффициенты для достижения консенсуса! Консенсус выкидывает ненадежные матчи!
@@ -201,7 +220,7 @@ public class ImprovementService {
     private void saveImprovementResult(int rightAnswers, int availableStatsIdsSize, Map<String, Object> mapForThisImprovement,
                                        int currentEpoch) {
         ImprovementResults improvementResults = new ImprovementResults();
-        improvementResults.accuracy = (float) rightAnswers/availableStatsIdsSize;
+        improvementResults.accuracy = (float) rightAnswers / availableStatsIdsSize;
         improvementResults.currentEpoch = currentEpoch;
         improvementResults.rightCount = rightAnswers;
         improvementResults.allCount = availableStatsIdsSize;
