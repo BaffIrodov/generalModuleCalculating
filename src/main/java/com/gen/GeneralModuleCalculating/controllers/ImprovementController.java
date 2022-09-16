@@ -3,8 +3,10 @@ package com.gen.GeneralModuleCalculating.controllers;
 import com.gen.GeneralModuleCalculating.calculatingMethods.Config;
 import com.gen.GeneralModuleCalculating.common.CommonUtils;
 import com.gen.GeneralModuleCalculating.dtos.ImprovementRequestDto;
+import com.gen.GeneralModuleCalculating.dtos.ImprovementResultsDto;
 import com.gen.GeneralModuleCalculating.dtos.MapsCalculatingQueueResponseDto;
 import com.gen.GeneralModuleCalculating.dtos.PatternTemplateNumber;
+import com.gen.GeneralModuleCalculating.entities.ImprovementResults;
 import com.gen.GeneralModuleCalculating.services.CalculatingService;
 import com.gen.GeneralModuleCalculating.services.DebugService;
 import com.gen.GeneralModuleCalculating.services.ImprovementService;
@@ -13,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @CrossOrigin(origins = "http://localhost:4200")
@@ -53,4 +57,19 @@ public class ImprovementController {
         }
     }
 
+    @GetMapping("/get-improvement-results")
+    public List<ImprovementResultsDto> getImprovementResults() {
+        List<ImprovementResultsDto> improvementResultsDtoList = new ArrayList<>();
+        List<ImprovementResults> results = improvementService.getImprovementResultsFromDB();
+        results.forEach(res -> {
+            ImprovementResultsDto improvementResultsDto = new ImprovementResultsDto();
+            improvementResultsDto.accuracy = res.accuracy;
+            improvementResultsDto.current_epoch = res.currentEpoch;
+            improvementResultsDto.right_count = res.rightCount;
+            improvementResultsDto.all_count = res.allCount;
+            improvementResultsDto.full_config = res.fullConfig;
+            improvementResultsDtoList.add(improvementResultsDto);
+        });
+        return improvementResultsDtoList;
+    }
 }
