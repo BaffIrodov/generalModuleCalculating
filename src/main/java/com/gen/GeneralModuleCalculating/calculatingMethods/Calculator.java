@@ -59,8 +59,8 @@ public class Calculator {
     }
 
     public float correctLowAndHighLimit(float playerForceFloat) {
-        if(playerForceFloat > 300) {
-            return 300;
+        if(playerForceFloat > 100) {
+            return 100;
         }
         else if(playerForceFloat < 0) {
             return 0;
