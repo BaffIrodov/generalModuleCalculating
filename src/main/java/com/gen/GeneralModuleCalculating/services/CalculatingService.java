@@ -188,8 +188,9 @@ public class CalculatingService {
                                 .toList().get(0));
                     }
                 });
-
-                stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+                if (Config.isConsiderStabilityCorrection) {
+                    stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+                }
             }
         }
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
