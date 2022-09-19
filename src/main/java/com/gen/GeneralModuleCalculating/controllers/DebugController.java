@@ -27,4 +27,7 @@ public class DebugController {
     public void resetPlayersForces() {
         debugService.resetAllPlayerForcesToDefault();
     }
+
+    @GetMapping("/clear-players-forces")
+    public void clearPlayersForces() { debugService.clearTablePlayersForces(); }
 }

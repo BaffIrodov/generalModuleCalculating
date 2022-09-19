@@ -67,6 +67,8 @@ public class ImprovementService {
             new QRoundHistory("roundHistory");
     private static final QMapsCalculatingQueue mapsCalculatingQueue =
             new QMapsCalculatingQueue("mapsCalculatingQueue");
+    private static final QImprovementResults improvementResults =
+            new QImprovementResults("improvementResults");
 
     public void improvementTest(ImprovementRequestDto requestDto) {
         Map<String, Object> mapForThisImprovement = CommonUtils.invokeConfig();
@@ -232,5 +234,11 @@ public class ImprovementService {
         improvementResults.allCount = availableStatsIdsSize;
         improvementResults.fullConfig = mapForThisImprovement.toString();
         improvementResultsRepository.save(improvementResults);
+    }
+
+    public List<ImprovementResults> getImprovementResultsFromDB () {
+        List<ImprovementResults> results = (List<ImprovementResults>)
+                queryFactory.from(improvementResults).fetch();
+        return results;
     }
 }

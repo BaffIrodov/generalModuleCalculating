@@ -9,6 +9,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.io.FileWriter;
 import java.util.*;
 
@@ -42,6 +43,12 @@ public class DebugService {
         });
         playerForceRepository.saveAll(newList);
         System.out.println("Сброс всех сил плэйеров занял: " + (System.currentTimeMillis() - now) + " мс");
+    }
+
+    @Transactional
+    public void clearTablePlayersForces() {
+        System.out.println("Очистка таблицы");
+        playerForceRepository.truncatePlayerForce();
     }
 
     public void getFilesWithDistribution() {
