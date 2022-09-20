@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -70,12 +71,58 @@ public class ImprovementService {
     private static final QImprovementResults improvementResults =
             new QImprovementResults("improvementResults");
 
-    public void improvementTest(ImprovementRequestDto requestDto) {
+    public void improvementByConsensus(ImprovementRequestDto requestDto) {
+        List<Integer> availableStatsIdsTest = getAvailableStatsIdsTest(requestDto);
+        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> map1 = improvementTest(requestDto);
+        Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere1 = map1.keySet().stream().toList().get(0);
+        Map<Integer, List<PlayerForce>> playerForcesMap1 = map1.values().stream().toList().get(0);
+        Map<Integer, Boolean> res1 = getRightAnswerIds(availableStatsIdsTest,
+                allPlayersAnywhere1, playerForcesMap1);
+        //second
+        Config.oneCoeffFuncKills = 1;
+        Config.twoCoeffFuncKills = 0;
+        Config.threeCoeffFuncKills = 0;
+        Config.fourCoeffFuncKills = 0;
+        Config.sixthCoeffFuncKills = 0;
+
+        Config.oneCoeffFuncAdr = 1;
+        Config.twoCoeffFuncAdr = 0;
+        Config.threeCoeffFuncAdr = 0;
+        Config.fourCoeffFuncAdr = 0;
+
+        Config.oneCoeffFuncHeadshots = 1;
+        Config.twoCoeffFuncHeadshots = 0;
+        Config.threeCoeffFuncHeadshots = 0;
+        Config.fourCoeffFuncHeadshots = 0;
+
+        Config.oneCoeffFuncRating20 = 1;
+        Config.twoCoeffFuncRating20 = 0;
+        Config.threeCoeffFuncRating20 = 0;
+        Config.fourCoeffFuncRating20 = 0;
+        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> map2 = improvementTest(requestDto);
+        Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere2 = map2.keySet().stream().toList().get(0);
+        Map<Integer, List<PlayerForce>> playerForcesMap2 = map2.values().stream().toList().get(0);
+        Map<Integer, Boolean> res2 = getRightAnswerIds(availableStatsIdsTest,
+                allPlayersAnywhere2, playerForcesMap2);
+        Map<Integer, Boolean> fullResult = new HashMap<>();
+        res1.forEach((k,v) -> {
+            if(res2.containsKey(k)) { //если в обоих случаях программа считает, что знает ответ
+                if(res2.get(k) == v) //и если ответ получился одинаковым
+                    fullResult.put(k, v);
+            }
+        });
+        Integer rightAnswers = fullResult.values().stream().filter(e -> e).toList().size();
+        Integer allAnswers = fullResult.size();
+        System.out.println("\nПосле консенсуса вышло вот это: на " + allAnswers +
+                " ответов приходится " + rightAnswers + "правильных. Процент вышел: " +
+                (float) ((float) rightAnswers/ (float) allAnswers));
+    }
+
+    public Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> improvementTest(ImprovementRequestDto requestDto) {
         Map<String, Object> mapForThisImprovement = CommonUtils.invokeConfig();
         System.out.println("improvement started");
-        Integer testPercent = requestDto.getTestDatasetPercent();
-        List<Integer> availableStatsIdsTrain = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
-        List<Integer> availableStatsIdsTest = calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
+        List<Integer> availableStatsIdsTrain = getAvailableStatsIdsTrain(requestDto);
+        List<Integer> availableStatsIdsTest = getAvailableStatsIdsTest(requestDto);
         List<Integer> existingPlayerIds = calculatingReader
                 .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIdsTrain);
         List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, true);
@@ -85,7 +132,6 @@ public class ImprovementService {
         });
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
-        long now = System.currentTimeMillis();
         Integer currectId = 0;
         Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere =
                 queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
@@ -111,7 +157,6 @@ public class ImprovementService {
                                 .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
             });
         }
-//        System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
@@ -157,7 +202,9 @@ public class ImprovementService {
         }
         calculateImprovementResult(availableStatsIdsTest,
                 allPlayersAnywhere, playerForcesMap, mapForThisImprovement, epochs);
-        //TODO именно в процессе расчета предикта меняются кожффициенты для достижения консенсуса! Консенсус выкидывает ненадежные матчи!
+        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> resultMap = new HashMap<>();
+        resultMap.put(allPlayersAnywhere, playerForcesMap);
+        return resultMap;
     }
 
     public void calculateImprovementResult(List<Integer> availableStatsIdsTest,
@@ -225,6 +272,50 @@ public class ImprovementService {
                 (float) constRightAnswers / constAllAnswers);
     }
 
+    private Map<Integer, Boolean> getRightAnswerIds(List<Integer> availableStatsIdsTest,
+                                            Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere,
+                                            Map<Integer, List<PlayerForce>> playerForcesMap) {
+        Map<Integer, Boolean> resultMap = new HashMap<>();
+        for (Integer id : availableStatsIdsTest) {
+            List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
+            Float leftForce = 0f;
+            Float rightForce = 0f;
+            // основная карта
+            for (PlayerOnMapResults p : players) {
+                PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(p.playedMapString)).toList().get(0);
+                if (p.team.equals("left")) {
+                    leftForce += (force.playerForce * force.playerStability) / 100;
+                } else {
+                    rightForce += (force.playerForce * force.playerStability) / 100;
+                }
+            }
+            // второстепенные карты
+            if (Config.isConsiderActiveMaps) {
+                for (PlayerOnMapResults p : players) {
+                    for (int j = 0; j < 7; j++) {
+                        int currentMap = Config.activeMaps.get(j);
+                        String currentMapString = MapsEnum.values()[currentMap].toString();
+                        PlayerForce force = playerForcesMap.get(p.playerId).stream().filter(r -> r.map.equals(currentMapString)).toList().get(0);
+                        if (p.team.equals("left")) {
+                            leftForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                        } else {
+                            rightForce += ((force.playerForce * force.playerStability) / 100) * 0.05f;
+                        }
+                    }
+                }
+            }
+            String winner = players.get(0).teamWinner;
+            if ((leftForce > rightForce * 1.5) || (rightForce > leftForce * 1.5)) {
+                if ((leftForce > rightForce * 1.5 && winner.equals("left")) || (rightForce > leftForce * 1.5 && winner.equals("right"))) {
+                    resultMap.put(id, true);
+                } else {
+                    resultMap.put(id, false);
+                }
+            }
+        }
+        return resultMap;
+    }
+
     private void saveImprovementResult(int rightAnswers, int availableStatsIdsSize, Map<String, Object> mapForThisImprovement,
                                        int currentEpoch) {
         ImprovementResults improvementResults = new ImprovementResults();
@@ -241,4 +332,15 @@ public class ImprovementService {
                 queryFactory.from(improvementResults).fetch();
         return results;
     }
+
+    private List<Integer> getAvailableStatsIdsTrain(ImprovementRequestDto requestDto) {
+        Integer testPercent = requestDto.getTestDatasetPercent();
+        return calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
+    }
+
+    private List<Integer> getAvailableStatsIdsTest(ImprovementRequestDto requestDto) {
+        Integer testPercent = requestDto.getTestDatasetPercent();
+        return calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
+    }
+
 }

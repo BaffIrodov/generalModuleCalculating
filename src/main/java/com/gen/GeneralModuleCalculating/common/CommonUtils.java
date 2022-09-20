@@ -48,6 +48,10 @@ public class CommonUtils {
         Config.ratingMultiplier = Float.parseFloat(config.get("ratingMultiplier").toString());
         Config.historyMultiplier = Float.parseFloat(config.get("historyMultiplier").toString());
         Config.forceTeamMultiplier = Float.parseFloat(config.get("forceTeamMultiplier").toString());
+        Config.lowLimit = Integer.parseInt(config.get("lowLimit").toString());
+        Config.highLimit = Integer.parseInt(config.get("highLimit").toString());
+        Config.actualityMultiplier = Float.parseFloat(config.get("actualityMultiplier").toString());
+        Config.actualityConst = Float.parseFloat(config.get("actualityConst").toString());
         Config.normalizingCoeffAdr = Float.parseFloat(config.get("normalizingCoeffAdr").toString());
         Config.zeroCoeffFuncAdr = Float.parseFloat(config.get("zeroCoeffFuncAdr").toString());
         Config.oneCoeffFuncAdr = Float.parseFloat(config.get("oneCoeffFuncAdr").toString());
@@ -76,6 +80,7 @@ public class CommonUtils {
         Config.normalizingCoeffHistory = Float.parseFloat(config.get("normalizingCoeffHistory").toString());
         Config.stabilityCompareCoeff = Float.parseFloat(config.get("stabilityCompareCoeff").toString());
         Config.isConsiderActiveMaps = Boolean.getBoolean(config.get("isConsiderActiveMaps").toString());
+        Config.isConsiderStabilityCorrection = Boolean.getBoolean(config.get("isConsiderStabilityCorrection").toString());
         Config.playerForceTableSize = Integer.parseInt(this.helpInt(config, "playerForceTableSize"));
         Config.playerForceDefault = Float.parseFloat(config.get("playerForceDefault").toString());
         Config.playerStability = Integer.parseInt(this.helpInt(config, "playerStability"));
@@ -84,7 +89,12 @@ public class CommonUtils {
     public static Map<String, Object> invokeConfig() {
         Map<String, Object> mapValueByFieldName = new LinkedHashMap<>();
         mapValueByFieldName.put("isConsiderActiveMaps", Config.isConsiderActiveMaps);
+        mapValueByFieldName.put("isConsiderStabilityCorrection", Config.isConsiderStabilityCorrection);
         mapValueByFieldName.put("epochsNumber", Config.epochsNumber);
+        mapValueByFieldName.put("highLimit", Config.highLimit);
+        mapValueByFieldName.put("lowLimit", Config.lowLimit);
+        mapValueByFieldName.put("actualityMultiplier", Config.actualityMultiplier);
+        mapValueByFieldName.put("actualityConst", Config.actualityConst);
         mapValueByFieldName.put("calculatingStatsIdNumber", Config.calculatingStatsIdNumber);
         mapValueByFieldName.put("adrMultiplier", Config.adrMultiplier);
         mapValueByFieldName.put("killsMultiplier", Config.killsMultiplier);
@@ -107,10 +117,10 @@ public class CommonUtils {
         mapValueByFieldName.put("sixthCoeffFuncKills", Config.sixthCoeffFuncKills);
         mapValueByFieldName.put("normalizingCoeffHeadshots", Config.normalizingCoeffHeadshots);
         mapValueByFieldName.put("zeroCoeffFuncHeadshots", Config.zeroCoeffFuncHeadshots);
-        mapValueByFieldName.put( "oneCoeffFuncHeadshots", Config.oneCoeffFuncHeadshots);
-        mapValueByFieldName.put( "twoCoeffFuncHeadshots", Config.twoCoeffFuncHeadshots);
-        mapValueByFieldName.put( "threeCoeffFuncHeadshots", Config.threeCoeffFuncHeadshots);
-        mapValueByFieldName.put( "fourCoeffFuncHeadshots", Config.fourCoeffFuncHeadshots);
+        mapValueByFieldName.put("oneCoeffFuncHeadshots", Config.oneCoeffFuncHeadshots);
+        mapValueByFieldName.put("twoCoeffFuncHeadshots", Config.twoCoeffFuncHeadshots);
+        mapValueByFieldName.put("threeCoeffFuncHeadshots", Config.threeCoeffFuncHeadshots);
+        mapValueByFieldName.put("fourCoeffFuncHeadshots", Config.fourCoeffFuncHeadshots);
         mapValueByFieldName.put("normalizingCoeffRating20", Config.normalizingCoeffRating20);
         mapValueByFieldName.put("zeroCoeffFuncRating20", Config.zeroCoeffFuncRating20);
         mapValueByFieldName.put("oneCoeffFuncRating20", Config.oneCoeffFuncRating20);

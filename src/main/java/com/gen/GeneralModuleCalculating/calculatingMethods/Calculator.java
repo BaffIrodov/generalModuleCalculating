@@ -48,7 +48,8 @@ public class Calculator {
         float rating = rating20Calculator.getForceByRating20(player);
         float forceEnemyTeam = !isFirstCalculation? forceTeamCalculator.getForceTeam(enemyTeam, playerForcesMap) : 0f;
         //для начала выборки будет 0.9, конец выборки - 1.1
-        float actualityMultiplier = (float) ((currentStatsIdNumber/(allStatsIdNumber * 5)) + 0.9);
+        float actualityMultiplier = (float) (Config.actualityMultiplier * (currentStatsIdNumber/allStatsIdNumber)
+                + Config.actualityConst);
         return actualityMultiplier *
                 (adr * adrMultiplier +
                 kills * killsMultiplier +

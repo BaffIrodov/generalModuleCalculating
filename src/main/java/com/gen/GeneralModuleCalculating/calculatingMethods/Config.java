@@ -28,6 +28,8 @@ public class Config {
     public static boolean isConsiderStabilityCorrection = true;
     public static int highLimit = 100;
     public static int lowLimit = 5;
+    public static float actualityMultiplier = 0.2f;
+    public static float actualityConst = 0.9f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент

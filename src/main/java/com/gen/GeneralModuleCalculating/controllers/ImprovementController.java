@@ -36,7 +36,7 @@ public class ImprovementController {
 
     @PostMapping("/no-config")
     public void improvementNoConfig(@RequestBody ImprovementRequestDto request) {
-        improvementService.improvementTest(request);
+        improvementService.improvementByConsensus(request);
     }
 
     @PostMapping("/with-config")
