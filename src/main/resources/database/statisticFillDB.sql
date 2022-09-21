@@ -1,0 +1,10 @@
+INSERT INTO statistic_result VALUES (143793, 'left', 1.61);
+INSERT INTO statistic_result VALUES (143797, 'right', 1.78);
+INSERT INTO statistic_result VALUES (143794, 'left', 1.73);
+INSERT INTO statistic_result VALUES (143796, 'left', 1.39);
+INSERT INTO statistic_result VALUES (143796, 'left', 1.39);
+INSERT INTO statistic_result VALUES (143798, 'left', 1.9);
+INSERT INTO statistic_result VALUES (143802, 'left', 1.71);
+INSERT INTO statistic_result VALUES (143805, 'left', 1.27);
+INSERT INTO statistic_result VALUES (143807, 'left', 1.29);
+INSERT INTO statistic_result VALUES (143812, 'left', 1.26);
