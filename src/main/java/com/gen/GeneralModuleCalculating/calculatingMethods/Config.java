@@ -30,6 +30,7 @@ public class Config {
     public static int lowLimit = 5;
     public static float actualityMultiplier = 0.2f;
     public static float actualityConst = 0.9f;
+    public static float compareMultiplier = 1.5f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент

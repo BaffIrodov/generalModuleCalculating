@@ -118,6 +118,14 @@ public class ImprovementService {
                 (float) ((float) rightAnswers/ (float) allAnswers));
     }
 
+    public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
+        for (int i = 0; i <= inactivePercent; i++) {
+            requestDto.setInactiveDatasetPercent(inactivePercent - i);
+            improvementTest(requestDto);
+        }
+    }
+
     public Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> improvementTest(ImprovementRequestDto requestDto) {
         Map<String, Object> mapForThisImprovement = CommonUtils.invokeConfig();
         System.out.println("improvement started");
@@ -248,8 +256,8 @@ public class ImprovementService {
             if ((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
                 rightAnswers++;
             }
-            if ((leftForce > rightForce * 1.5) || (rightForce > leftForce * 1.5)) percentAllAnswers++;
-            if ((leftForce > rightForce * 1.5 && winner.equals("left")) || (rightForce > leftForce * 1.5 && winner.equals("right"))) {
+            if ((leftForce > rightForce * Config.compareMultiplier) || (rightForce > leftForce * Config.compareMultiplier)) percentAllAnswers++;
+            if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                 percentRightAnswers++;
             }
             if ((leftForce > rightForce + 100) || (rightForce > leftForce + 100)) constAllAnswers++;
@@ -258,18 +266,18 @@ public class ImprovementService {
             }
         }
         saveImprovementResult(rightAnswers, availableStatsIdsTest.size(), mapForThisImprovement, currectEpoch);
-        System.out.println("Эпоха номер: " + (currectEpoch) + ". На " + availableStatsIdsTest.size() +
-                " матчей приходится " + rightAnswers +
-                " правильных ответов! Процент точности равен " +
-                (float) rightAnswers / availableStatsIdsTest.size());
+        //System.out.println("Эпоха номер: " + (currectEpoch) + ". На " + availableStatsIdsTest.size() +
+        //        " матчей приходится " + rightAnswers +
+        //        " правильных ответов! Процент точности равен " +
+        //        (float) rightAnswers / availableStatsIdsTest.size());
         System.out.println("(Процент) Эпоха номер: " + (currectEpoch) + ". На " + percentAllAnswers +
                 " матчей приходится " + percentRightAnswers +
                 " правильных ответов! Процент точности равен " +
                 (float) percentRightAnswers / percentAllAnswers);
-        System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
-                " матчей приходится " + constRightAnswers +
-                " правильных ответов! Процент точности равен " +
-                (float) constRightAnswers / constAllAnswers);
+//        System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
+//                " матчей приходится " + constRightAnswers +
+//                " правильных ответов! Процент точности равен " +
+//                (float) constRightAnswers / constAllAnswers);
     }
 
     private Map<Integer, Boolean> getRightAnswerIds(List<Integer> availableStatsIdsTest,
@@ -305,8 +313,8 @@ public class ImprovementService {
                 }
             }
             String winner = players.get(0).teamWinner;
-            if ((leftForce > rightForce * 1.5) || (rightForce > leftForce * 1.5)) {
-                if ((leftForce > rightForce * 1.5 && winner.equals("left")) || (rightForce > leftForce * 1.5 && winner.equals("right"))) {
+            if ((leftForce > rightForce * Config.compareMultiplier) || (rightForce > leftForce * Config.compareMultiplier)) {
+                if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                     resultMap.put(id, true);
                 } else {
                     resultMap.put(id, false);
@@ -334,13 +342,17 @@ public class ImprovementService {
     }
 
     private List<Integer> getAvailableStatsIdsTrain(ImprovementRequestDto requestDto) {
-        Integer testPercent = requestDto.getTestDatasetPercent();
-        return calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, false);
+        return calculatingReader.getAvailableStatsIdsOrderedDatasetAndInactive(
+                requestDto.getTestDatasetPercent(),
+                false,
+                requestDto.getInactiveDatasetPercent());
     }
 
     private List<Integer> getAvailableStatsIdsTest(ImprovementRequestDto requestDto) {
-        Integer testPercent = requestDto.getTestDatasetPercent();
-        return calculatingReader.getAvailableStatsIdsOrderedDataset(testPercent, true);
+        return calculatingReader.getAvailableStatsIdsOrderedDatasetAndInactive(
+                requestDto.getTestDatasetPercent(),
+                true,
+                requestDto.getInactiveDatasetPercent());
     }
 
 }

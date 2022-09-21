@@ -58,8 +58,31 @@ public class CalculatingReader {
                     .subList(allIds.size() - Config.calculatingStatsIdNumber, allIds.size());
         }
         Integer waterLineIndex = allIds.size() * testPercent / 100;
+
+        //todo неправильно считается - выкидывается не то, что нужно - надо с другой стороны
         List<Integer> testDatasetIds = allIds.subList(0, waterLineIndex);
         List<Integer> trainDatasetIds = allIds.subList(waterLineIndex, allIds.size());
+        return isTestDataset? testDatasetIds: trainDatasetIds;
+    }
+
+    public List<Integer> getAvailableStatsIdsOrderedDatasetAndInactive(Integer testPercent, Boolean isTestDataset,
+                                                                       Integer inactivePercent) {
+        List<Integer> allIds = queryFactory.from(mapsCalculatingQueue)
+                .leftJoin(roundHistory).on(mapsCalculatingQueue.idStatsMap
+                        .eq(roundHistory.idStatsMap))
+                .select(mapsCalculatingQueue.idStatsMap)
+                .where(mapsCalculatingQueue.processed.eq(false))
+                .orderBy(roundHistory.dateOfMatch.asc())
+                .fetch();
+        if(Config.calculatingStatsIdNumber != 0) {
+            allIds = allIds
+                    .subList(allIds.size() - Config.calculatingStatsIdNumber, allIds.size());
+        }
+        Integer waterLineIndex = allIds.size() * (100-testPercent-inactivePercent) / 100;
+        Integer inactiveIndex = allIds.size() * (100-inactivePercent) / 100;
+        List<Integer> trainDatasetIds = allIds.subList(0, waterLineIndex);
+        List<Integer> testDatasetIds = allIds.subList(waterLineIndex, inactiveIndex);
+        List<Integer> inactiveIds = allIds.subList(inactiveIndex, allIds.size());
         return isTestDataset? testDatasetIds: trainDatasetIds;
     }
 
