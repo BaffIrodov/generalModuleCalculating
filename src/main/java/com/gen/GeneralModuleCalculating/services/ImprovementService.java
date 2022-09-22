@@ -337,7 +337,7 @@ public class ImprovementService {
 
     public List<ImprovementResults> getImprovementResultsFromDB () {
         List<ImprovementResults> results = (List<ImprovementResults>)
-                queryFactory.from(improvementResults).fetch();
+                queryFactory.from(improvementResults).orderBy(improvementResults.id.desc()).fetch();
         return results;
     }
 

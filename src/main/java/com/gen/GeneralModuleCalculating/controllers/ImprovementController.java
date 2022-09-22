@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -68,7 +69,8 @@ public class ImprovementController {
             improvementResultsDto.current_epoch = res.currentEpoch;
             improvementResultsDto.right_count = res.rightCount;
             improvementResultsDto.all_count = res.allCount;
-            improvementResultsDto.full_config = res.fullConfig;
+            improvementResultsDto.full_config = Arrays.stream(res.fullConfig.
+                    substring(1, res.fullConfig.length()-1).split(", ")).toList();
             improvementResultsDtoList.add(improvementResultsDto);
         });
         return improvementResultsDtoList;
