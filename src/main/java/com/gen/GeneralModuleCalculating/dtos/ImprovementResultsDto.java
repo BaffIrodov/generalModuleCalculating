@@ -7,5 +7,5 @@ public class ImprovementResultsDto {
     public Integer current_epoch;
     public Integer right_count;
     public Integer all_count;
-    public String full_config;
+    public List<String> full_config;
 }
