@@ -152,6 +152,11 @@ public class CalculatingService {
                         true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
                 playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                //Задаю лимиты для силы
+                playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
+                        calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
+                                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
@@ -173,6 +178,11 @@ public class CalculatingService {
                             false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
                     playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                    //Задаю лимиты для силы
+                    playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
+                            calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
+                                    .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -194,7 +204,7 @@ public class CalculatingService {
             }
         }
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
-        List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != 5 || e.playerStability != 100).toList();
+        List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
         playerForceRepository.saveAll(changed);
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
     }
