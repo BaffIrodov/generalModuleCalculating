@@ -27,7 +27,9 @@ public interface PlayerForceRepository extends JpaRepository<PlayerForce, Intege
                     "    \"player_id\" int8,\n" +
                     "    \"player_force\" float8,\n" +
                     "    \"player_stability\" int8,\n" +
-                    "    \"map\" VARCHAR(20)\n" +
+                    "    \"map\" VARCHAR(20),\n" +
+                    "    \"lose_strike\" int8 default 0,\n" +
+                    "    \"win_strike\" int8 default 0\n" +
                     ");\n" +
                     "\n" +
                     "DROP SEQUENCE IF EXISTS \"sq_player_force_id\";\n" +

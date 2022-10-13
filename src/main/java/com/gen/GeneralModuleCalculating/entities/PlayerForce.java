@@ -18,4 +18,6 @@ public class PlayerForce {
     public float playerForce;
     public int playerStability;
     public String map;
+    public int winStrike;
+    public int loseStrike;
 }

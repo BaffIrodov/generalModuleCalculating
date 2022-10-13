@@ -53,6 +53,7 @@ public class CommonUtils {
         Config.actualityMultiplier = Float.parseFloat(config.get("actualityMultiplier").toString());
         Config.actualityConst = Float.parseFloat(config.get("actualityConst").toString());
         Config.compareMultiplier = Float.parseFloat(config.get("compareMultiplier").toString());
+        Config.differencePercent = Float.parseFloat(config.get("differencePercent").toString());
         Config.normalizingCoeffAdr = Float.parseFloat(config.get("normalizingCoeffAdr").toString());
         Config.zeroCoeffFuncAdr = Float.parseFloat(config.get("zeroCoeffFuncAdr").toString());
         Config.oneCoeffFuncAdr = Float.parseFloat(config.get("oneCoeffFuncAdr").toString());
@@ -82,6 +83,7 @@ public class CommonUtils {
         Config.stabilityCompareCoeff = Float.parseFloat(config.get("stabilityCompareCoeff").toString());
         Config.isConsiderActiveMaps = Boolean.getBoolean(config.get("isConsiderActiveMaps").toString());
         Config.isConsiderStabilityCorrection = Boolean.getBoolean(config.get("isConsiderStabilityCorrection").toString());
+        Config.isConsiderDifferenceCorrection = Boolean.getBoolean(config.get("isConsiderDifferenceCorrection").toString());
         Config.playerForceTableSize = Integer.parseInt(this.helpInt(config, "playerForceTableSize"));
         Config.playerForceDefault = Float.parseFloat(config.get("playerForceDefault").toString());
         Config.playerStability = Integer.parseInt(this.helpInt(config, "playerStability"));
@@ -91,12 +93,14 @@ public class CommonUtils {
         Map<String, Object> mapValueByFieldName = new LinkedHashMap<>();
         mapValueByFieldName.put("isConsiderActiveMaps", Config.isConsiderActiveMaps);
         mapValueByFieldName.put("isConsiderStabilityCorrection", Config.isConsiderStabilityCorrection);
+        mapValueByFieldName.put("isConsiderDifferenceCorrection", Config.isConsiderDifferenceCorrection);
         mapValueByFieldName.put("epochsNumber", Config.epochsNumber);
         mapValueByFieldName.put("highLimit", Config.highLimit);
         mapValueByFieldName.put("lowLimit", Config.lowLimit);
         mapValueByFieldName.put("actualityMultiplier", Config.actualityMultiplier);
         mapValueByFieldName.put("actualityConst", Config.actualityConst);
         mapValueByFieldName.put("compareMultiplier", Config.compareMultiplier);
+        mapValueByFieldName.put("differencePercent", Config.differencePercent);
         mapValueByFieldName.put("calculatingStatsIdNumber", Config.calculatingStatsIdNumber);
         mapValueByFieldName.put("adrMultiplier", Config.adrMultiplier);
         mapValueByFieldName.put("killsMultiplier", Config.killsMultiplier);

@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS player_force
     "player_id" int8,
     "player_force" float8,
     "player_stability" int8,
-    "map" VARCHAR(20)
+    "map" VARCHAR(20),
+    "lose_strike" int8 default 0,
+    "win_strike" int8 default 0
 );
 
 DROP SEQUENCE IF EXISTS "sq_player_force_id";

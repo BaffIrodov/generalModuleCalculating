@@ -51,6 +51,9 @@ public class CalculatingService {
     StabilityCalculator stabilityCalculator;
 
     @Autowired
+    DifferenceCalculator differenceCalculator;
+
+    @Autowired
     CalculatingReader calculatingReader;
 
     @Autowired
@@ -90,6 +93,7 @@ public class CalculatingService {
 
     //для расчета нужно знать силу противника, однако при первом проходе её не будет, потому надо инициировать
     public void createPlayerForceTable() {
+        System.out.println("Началось создание таблицы playerForce");
         long now = System.currentTimeMillis();
         //если ранее таблица не была инициирована
         if (queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()) {
@@ -129,7 +133,7 @@ public class CalculatingService {
         List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, false);
         List<PlayerForce> newList = new ArrayList<>();
         allPlayerForces.forEach(e -> {
-            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map));
+            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map, 0, 0));
         });
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
@@ -150,13 +154,11 @@ public class CalculatingService {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
                         true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
-                playerForcesMap.get(player.playerId).stream()
-                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                playerForceForCalculate.playerForce += force;
                 //Задаю лимиты для силы
-                playerForcesMap.get(player.playerId).stream()
-                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
-                        calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
-                                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
+                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
@@ -176,13 +178,11 @@ public class CalculatingService {
                     float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                             Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
                             false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIds.size());
-                    playerForcesMap.get(player.playerId).stream()
-                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                    PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                    playerForceForCalculate.playerForce += force;
                     //Задаю лимиты для силы
-                    playerForcesMap.get(player.playerId).stream()
-                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
-                            calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
-                                    .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
+                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -201,9 +201,12 @@ public class CalculatingService {
                 if (Config.isConsiderStabilityCorrection) {
                     stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
                 }
+                if (Config.isConsiderDifferenceCorrection) {
+                    differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+                }
             }
         }
-        System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс");
+        System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс. Далее будет производиться запись в базу. Не отключать сервис/ не делать второй запрос!");
         List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
         playerForceRepository.saveAll(changed);
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");

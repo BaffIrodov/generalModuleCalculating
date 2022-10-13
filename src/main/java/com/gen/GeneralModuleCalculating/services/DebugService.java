@@ -38,7 +38,7 @@ public class DebugService {
         List<PlayerForce> newList = new ArrayList<>();
         forces.forEach(f -> {
             if(f.playerForce != 5f || f.playerStability != 100) {
-                newList.add(new PlayerForce(f.id, f.playerId, 5f, 100, f.map));
+                newList.add(new PlayerForce(f.id, f.playerId, 5f, 100, f.map, 0, 0));
             }
         });
         playerForceRepository.saveAll(newList);

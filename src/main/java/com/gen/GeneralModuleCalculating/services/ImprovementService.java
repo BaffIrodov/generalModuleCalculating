@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +53,9 @@ public class ImprovementService {
 
     @Autowired
     StabilityCalculator stabilityCalculator;
+
+    @Autowired
+    DifferenceCalculator differenceCalculator;
 
     @Autowired
     CalculatingReader calculatingReader;
@@ -119,7 +123,7 @@ public class ImprovementService {
     }
 
     public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
         for (int i = 0; i <= inactivePercent; i++) {
             requestDto.setInactiveDatasetPercent(inactivePercent - i);
             improvementTest(requestDto);
@@ -136,7 +140,8 @@ public class ImprovementService {
         List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, true);
         List<PlayerForce> newList = new ArrayList<>();
         allPlayerForces.forEach(e -> {
-            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map));
+            //для improvement нужны только дефолтные значения. Дальше расчет в памяти
+            newList.add(new PlayerForce(e.id, e.playerId, Config.playerForceDefault, Config.playerStability, e.map, 0, 0));
         });
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
@@ -156,18 +161,28 @@ public class ImprovementService {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
                         true, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
-                playerForcesMap.get(player.playerId).stream()
-                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                playerForceForCalculate.playerForce += force;
+                if (player.teamWinner.equals(player.team)) {
+                    playerForceForCalculate.winStrike++;
+                    playerForceForCalculate.loseStrike = 0;
+                }
+                else {
+                    playerForceForCalculate.winStrike = 0;
+                    playerForceForCalculate.loseStrike++;
+                }
+                //Учитываю вин и луз стрики
+                playerForceForCalculate.playerForce += playerForceForCalculate.winStrike;
+                playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike;
                 //Задаю лимиты для силы
-                playerForcesMap.get(player.playerId).stream()
-                        .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
-                        calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
-                                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
+                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
             });
         }
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
+//            AtomicInteger index = new AtomicInteger();
             for (Integer id : availableStatsIdsTrain) {
                 currectId++;
                 Integer finalCurrectId = currectId;
@@ -177,17 +192,34 @@ public class ImprovementService {
                 RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                         .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
                 List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+//                int wow = i;
                 players.forEach(player -> {
+//                    index.getAndIncrement();
                     float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                             Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
                             false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
-                    playerForcesMap.get(player.playerId).stream()
-                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce += force;
+                    //if (!player.team.equals(player.teamWinner)) force -= 3f;
+                    PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                    playerForceForCalculate.playerForce += force;
+                    if (player.teamWinner.equals(player.team)) {
+                        playerForceForCalculate.winStrike++;
+                        playerForceForCalculate.loseStrike = 0;
+                    }
+                    else {
+                        playerForceForCalculate.winStrike = 0;
+                        playerForceForCalculate.loseStrike++;
+                    }
+                    //Учитываю вин и луз стрики
+                    playerForceForCalculate.playerForce += playerForceForCalculate.winStrike * 0.5f;
+                    playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike * 0.5f;
                     //Задаю лимиты для силы
-                    playerForcesMap.get(player.playerId).stream()
-                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce =
-                            calculator.correctLowAndHighLimit(playerForcesMap.get(player.playerId).stream()
-                                    .filter(e -> e.map.equals(player.playedMapString)).toList().get(0).playerForce);
+                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+//                    if (player.playerId == 29) {
+//
+//                        System.out.println("Эпоха: " + wow + "| Id игры: " + id + "| Сила игрока: " +  playerForcesMap.get(player.playerId).stream()
+//                                .filter(e -> e.map.equals("MIRAGE")).toList().get(0).playerForce);
+//                    }
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -205,6 +237,9 @@ public class ImprovementService {
                 });
                 if (Config.isConsiderStabilityCorrection) {
                     stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+                }
+                if (Config.isConsiderDifferenceCorrection) {
+                    differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
                 }
             }
         }
@@ -260,8 +295,8 @@ public class ImprovementService {
             if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                 percentRightAnswers++;
             }
-            if ((leftForce > rightForce + 100) || (rightForce > leftForce + 100)) constAllAnswers++;
-            if ((leftForce > rightForce + 100 && winner.equals("left")) || (rightForce > leftForce + 100 && winner.equals("right"))) {
+            if ((leftForce > rightForce + 250) || (rightForce > leftForce + 250)) constAllAnswers++;
+            if ((leftForce > rightForce + 250 && winner.equals("left")) || (rightForce > leftForce + 250 && winner.equals("right"))) {
                 constRightAnswers++;
             }
         }
@@ -274,10 +309,10 @@ public class ImprovementService {
                 " матчей приходится " + percentRightAnswers +
                 " правильных ответов! Процент точности равен " +
                 (float) percentRightAnswers / percentAllAnswers);
-//        System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
-//                " матчей приходится " + constRightAnswers +
-//                " правильных ответов! Процент точности равен " +
-//                (float) constRightAnswers / constAllAnswers);
+        System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
+                " матчей приходится " + constRightAnswers +
+                " правильных ответов! Процент точности равен " +
+                (float) constRightAnswers / constAllAnswers);
     }
 
     private Map<Integer, Boolean> getRightAnswerIds(List<Integer> availableStatsIdsTest,

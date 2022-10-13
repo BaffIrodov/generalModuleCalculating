@@ -26,11 +26,13 @@ public class Config {
     public static float historyMultiplier = 3;
     public static float forceTeamMultiplier = 0.02f;
     public static boolean isConsiderStabilityCorrection = true;
-    public static int highLimit = 100;
+    public static boolean isConsiderDifferenceCorrection = false;
+    public static int highLimit = 300;
     public static int lowLimit = 5;
     public static float actualityMultiplier = 0.2f;
     public static float actualityConst = 0.9f;
-    public static float compareMultiplier = 1.5f;
+    public static float compareMultiplier = 2f;
+    public static float differencePercent = 0.1f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент
@@ -79,6 +81,6 @@ public class Config {
 
     // player force table init
     public static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
-    public static float playerForceDefault = 20; //Дефолтная сила игроков
+    public static float playerForceDefault = 30; //Дефолтная сила игроков
     public static int playerStability = 100; //Дефолтная стабильность игроков
 }

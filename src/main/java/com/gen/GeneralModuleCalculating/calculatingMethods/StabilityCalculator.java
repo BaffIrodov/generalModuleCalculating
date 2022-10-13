@@ -13,21 +13,29 @@ public class StabilityCalculator {
     public void calculateCorrectedStability(List<PlayerForce> leftTeam,
                                                          List<PlayerForce> rightTeam,
                                                          String teamWinner) {
-        float leftTeamStability = (float) leftTeam.stream().mapToDouble(e -> e.playerStability).average().getAsDouble();
-        float rightTeamStability = (float) rightTeam.stream().mapToDouble(e -> e.playerStability).average().getAsDouble();
-        float leftTeamForce = (float) leftTeam.stream().mapToDouble(e -> e.playerForce).sum()
-                * (float) leftTeamStability/100;
-        float rightTeamForce = (float) rightTeam.stream().mapToDouble(e -> e.playerForce).sum()
-                * (float) rightTeamStability/100;
+        float leftTeamForce = 0;
+        for (PlayerForce player : leftTeam) {
+            leftTeamForce += player.playerForce * player.playerStability;
+        }
+        float rightTeamForce = 0;
+        for (PlayerForce player : rightTeam) {
+            rightTeamForce += player.playerForce * player.playerStability;
+        }
         // левые существенно сильнее правых по расчетам, но проиграли на практике
+        //todo комплексный порог стабильности - -1, -2, -3 процента
         if ((leftTeamForce / rightTeamForce) > Config.stabilityCompareCoeff
                 && teamWinner.equals("right")) {
-            //вся команда левых снижает свою стабильность
+            if ((leftTeamForce / rightTeamForce) > (Config.stabilityCompareCoeff + 0.4f)) {
+                leftTeam.forEach(l -> l.playerStability -= 1f);
+            }
             leftTeam.forEach(l -> l.playerStability -= 1f);
         }
         // правые существенно сильнее левых по расчетам, но проиграли на практике
         if ((rightTeamForce / leftTeamForce) > Config.stabilityCompareCoeff
             && teamWinner.equals("left")) {
+            if ((rightTeamForce / leftTeamForce) > (Config.stabilityCompareCoeff + 0.4f)) {
+                rightTeam.forEach(r -> r.playerStability -= 1f);
+            }
             //вся команда правых снижает свою стабильность
             rightTeam.forEach(r -> r.playerStability -= 1f);
         }
