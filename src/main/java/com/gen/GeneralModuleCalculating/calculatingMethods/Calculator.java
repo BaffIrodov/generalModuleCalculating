@@ -60,8 +60,8 @@ public class Calculator {
     }
 
     public float correctLowAndHighLimit(float playerForceFloat) {
-        if(playerForceFloat > Config.highLimit) {
-            return Config.highLimit;
+        if(playerForceFloat > 10000) {
+            return 10000;
         }
         else if(playerForceFloat < Config.lowLimit) {
             return Config.lowLimit;

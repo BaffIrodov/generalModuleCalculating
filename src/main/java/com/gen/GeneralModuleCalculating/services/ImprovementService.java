@@ -14,10 +14,7 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -179,6 +176,13 @@ public class ImprovementService {
                 playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
             });
         }
+//        float max = 0;
+//        for (Float f : allPlayerForces.stream().map(e -> e.playerForce).toList()) {
+//            max = max < f? f: max;
+//        }
+//        for (PlayerForce player : allPlayerForces) {
+//            player.playerForce = (player.playerForce / max) * Config.highLimit;
+//        }
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
@@ -211,10 +215,13 @@ public class ImprovementService {
                         playerForceForCalculate.loseStrike++;
                     }
                     //Учитываю вин и луз стрики
+                    //todo consider надо добавить
                     playerForceForCalculate.playerForce += playerForceForCalculate.winStrike * 0.5f;
                     playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike * 0.5f;
                     //Задаю лимиты для силы
                     playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+
+
 //                    if (player.playerId == 29) {
 //
 //                        System.out.println("Эпоха: " + wow + "| Id игры: " + id + "| Сила игрока: " +  playerForcesMap.get(player.playerId).stream()
@@ -241,6 +248,13 @@ public class ImprovementService {
                 if (Config.isConsiderDifferenceCorrection) {
                     differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
                 }
+            }
+            float max2 = 0;
+            for (Float f : allPlayerForces.stream().map(e -> e.playerForce).toList()) {
+                max2 = max2 < f? f: max2;
+            }
+            for (PlayerForce player : allPlayerForces) {
+                player.playerForce = (player.playerForce / max2) * Config.highLimit;
             }
         }
         calculateImprovementResult(availableStatsIdsTest,
