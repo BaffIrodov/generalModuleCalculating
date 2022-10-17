@@ -18,7 +18,7 @@ public class Config {
 
     // global calculating settings
     public static int calculatingStatsIdNumber = 0; //Сколько забираем из базы последних игр. 0 - забираем всё
-    public static int epochsNumber = 3; //количество эпох при расчете
+    public static int epochsNumber = 2; //количество эпох при расчете
     public static float adrMultiplier = 0.6f;
     public static float killsMultiplier = 0.8f;
     public static float headshotsMultiplier = 0.02f;
@@ -27,11 +27,11 @@ public class Config {
     public static float forceTeamMultiplier = 0.02f;
     public static boolean isConsiderStabilityCorrection = true;
     public static boolean isConsiderDifferenceCorrection = false;
-    public static int highLimit = 300;
+    public static int highLimit = 200;
     public static int lowLimit = 5;
     public static float actualityMultiplier = 0.2f;
     public static float actualityConst = 0.9f;
-    public static float compareMultiplier = 2f;
+    public static float compareMultiplier = 3f;
     public static float differencePercent = 0.1f;
 
     //адр
@@ -81,6 +81,6 @@ public class Config {
 
     // player force table init
     public static int playerForceTableSize = 30000; //В какой-то момент этого станет недостаточно. На 210822 примерное кол-во --- 23к
-    public static float playerForceDefault = 30; //Дефолтная сила игроков
+    public static float playerForceDefault = 20; //Дефолтная сила игроков
     public static int playerStability = 100; //Дефолтная стабильность игроков
 }

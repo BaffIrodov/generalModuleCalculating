@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,6 +73,7 @@ public class ImprovementService {
             new QImprovementResults("improvementResults");
 
     public void improvementByConsensus(ImprovementRequestDto requestDto) {
+        /*
         List<Integer> availableStatsIdsTest = getAvailableStatsIdsTest(requestDto);
         Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> map1 = improvementTest(requestDto);
         Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere1 = map1.keySet().stream().toList().get(0);
@@ -117,17 +118,29 @@ public class ImprovementService {
         System.out.println("\nПосле консенсуса вышло вот это: на " + allAnswers +
                 " ответов приходится " + rightAnswers + "правильных. Процент вышел: " +
                 (float) ((float) rightAnswers/ (float) allAnswers));
+         */
     }
 
     public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
+        Map<Integer, Integer> resultMap = new HashMap<>();
         for (int i = 0; i <= inactivePercent; i++) {
             requestDto.setInactiveDatasetPercent(inactivePercent - i);
-            improvementTest(requestDto);
+            resultMap.putAll(improvementTest(requestDto));
         }
+        AtomicReference<Integer> right = new AtomicReference<>(0);
+        AtomicReference<Integer> all = new AtomicReference<>(0);
+        resultMap.forEach((k, v) -> {
+            right.updateAndGet(v1 -> v1 + k);
+            all.updateAndGet(v1 -> v1 + v);
+        });
+        System.out.println("!Сводный результат! На " + all.get() +
+                " матчей приходится " + right.get() +
+                " правильных ответов! Процент точности равен " +
+                (float) right.get()/all.get());
     }
 
-    public Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> improvementTest(ImprovementRequestDto requestDto) {
+    public Map<Integer, Integer> improvementTest(ImprovementRequestDto requestDto) {
         Map<String, Object> mapForThisImprovement = CommonUtils.invokeConfig();
         System.out.println("improvement started");
         List<Integer> availableStatsIdsTrain = getAvailableStatsIdsTrain(requestDto);
@@ -161,28 +174,13 @@ public class ImprovementService {
                 PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
                 playerForceForCalculate.playerForce += force;
-                if (player.teamWinner.equals(player.team)) {
-                    playerForceForCalculate.winStrike++;
-                    playerForceForCalculate.loseStrike = 0;
-                }
-                else {
-                    playerForceForCalculate.winStrike = 0;
-                    playerForceForCalculate.loseStrike++;
-                }
-                //Учитываю вин и луз стрики
-                playerForceForCalculate.playerForce += playerForceForCalculate.winStrike;
-                playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike;
+                winStrikeCalculation(player, playerForceForCalculate);
+                loseStrikeCalculation(player, playerForceForCalculate);
                 //Задаю лимиты для силы
-                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+                playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+//                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
             });
         }
-//        float max = 0;
-//        for (Float f : allPlayerForces.stream().map(e -> e.playerForce).toList()) {
-//            max = max < f? f: max;
-//        }
-//        for (PlayerForce player : allPlayerForces) {
-//            player.playerForce = (player.playerForce / max) * Config.highLimit;
-//        }
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
@@ -206,20 +204,11 @@ public class ImprovementService {
                     PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
                     playerForceForCalculate.playerForce += force;
-                    if (player.teamWinner.equals(player.team)) {
-                        playerForceForCalculate.winStrike++;
-                        playerForceForCalculate.loseStrike = 0;
-                    }
-                    else {
-                        playerForceForCalculate.winStrike = 0;
-                        playerForceForCalculate.loseStrike++;
-                    }
-                    //Учитываю вин и луз стрики
-                    //todo consider надо добавить
-                    playerForceForCalculate.playerForce += playerForceForCalculate.winStrike * 0.5f;
-                    playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike * 0.5f;
+                    winStrikeCalculation(player, playerForceForCalculate);
+                    loseStrikeCalculation(player, playerForceForCalculate);
                     //Задаю лимиты для силы
-                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+                    playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+//                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
 
 
 //                    if (player.playerId == 29) {
@@ -250,24 +239,37 @@ public class ImprovementService {
                 }
             }
             float max2 = 0;
-            for (Float f : allPlayerForces.stream().map(e -> e.playerForce).toList()) {
+            for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
                 max2 = max2 < f? f: max2;
             }
-            for (PlayerForce player : allPlayerForces) {
-                player.playerForce = (player.playerForce / max2) * Config.highLimit;
+            if (max2 > Config.highLimit) {
+                for (PlayerForce player : newList) {
+                    player.playerForce = (player.playerForce / max2) * Config.highLimit;
+                }
             }
         }
-        calculateImprovementResult(availableStatsIdsTest,
+//        float max2 = 0;
+//        for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
+//            max2 = max2 < f? f: max2;
+//        }
+//        if (max2 > Config.highLimit) {
+//            for (PlayerForce player : newList) {
+//                player.playerForce = (player.playerForce / max2) * Config.highLimit;
+//            }
+//        }
+        List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
+        Map<Integer, Integer> resultMap = calculateImprovementResult(availableStatsIdsTest,
                 allPlayersAnywhere, playerForcesMap, mapForThisImprovement, epochs);
-        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> resultMap = new HashMap<>();
-        resultMap.put(allPlayersAnywhere, playerForcesMap);
+//        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> resultMap = new HashMap<>();
+//        resultMap.put(allPlayersAnywhere, playerForcesMap);
         return resultMap;
     }
 
-    public void calculateImprovementResult(List<Integer> availableStatsIdsTest,
+    public Map<Integer, Integer> calculateImprovementResult(List<Integer> availableStatsIdsTest,
                                            Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere,
                                            Map<Integer, List<PlayerForce>> playerForcesMap,
                                            Map<String, Object> mapForThisImprovement, int currectEpoch) {
+        Map<Integer, Integer> resultMap = new HashMap<>();
         Integer rightAnswers = 0;
         Integer percentRightAnswers = 0;
         Integer percentAllAnswers = 0;
@@ -309,8 +311,8 @@ public class ImprovementService {
             if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                 percentRightAnswers++;
             }
-            if ((leftForce > rightForce + 250) || (rightForce > leftForce + 250)) constAllAnswers++;
-            if ((leftForce > rightForce + 250 && winner.equals("left")) || (rightForce > leftForce + 250 && winner.equals("right"))) {
+            if ((leftForce > rightForce + 50) || (rightForce > leftForce + 50)) constAllAnswers++;
+            if ((leftForce > rightForce + 50 && winner.equals("left")) || (rightForce > leftForce + 50 && winner.equals("right"))) {
                 constRightAnswers++;
             }
         }
@@ -322,11 +324,17 @@ public class ImprovementService {
         System.out.println("(Процент) Эпоха номер: " + (currectEpoch) + ". На " + percentAllAnswers +
                 " матчей приходится " + percentRightAnswers +
                 " правильных ответов! Процент точности равен " +
-                (float) percentRightAnswers / percentAllAnswers);
+                (float) percentRightAnswers / percentAllAnswers +
+                " Общая доля равна: " + (float) percentAllAnswers/availableStatsIdsTest.size() +
+                " (количество игр тестовой базы: " + availableStatsIdsTest.size() + ")");
         System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
                 " матчей приходится " + constRightAnswers +
                 " правильных ответов! Процент точности равен " +
-                (float) constRightAnswers / constAllAnswers);
+                (float) constRightAnswers / constAllAnswers +
+                " Общая доля равна: " + (float) constAllAnswers/availableStatsIdsTest.size() +
+                " (количество игр тестовой базы: " + availableStatsIdsTest.size() + ")");
+        resultMap.put(percentRightAnswers, percentAllAnswers);
+        return resultMap;
     }
 
     private Map<Integer, Boolean> getRightAnswerIds(List<Integer> availableStatsIdsTest,
@@ -371,6 +379,24 @@ public class ImprovementService {
             }
         }
         return resultMap;
+    }
+
+    private void winStrikeCalculation(PlayerOnMapResults player, PlayerForce playerForceForCalculate) {
+        if (player.teamWinner.equals(player.team)) {
+            playerForceForCalculate.winStrike++;
+        } else {
+            playerForceForCalculate.winStrike = 0;
+        }
+        playerForceForCalculate.playerForce += playerForceForCalculate.winStrike * 0.1f;
+    }
+
+    private void loseStrikeCalculation(PlayerOnMapResults player, PlayerForce playerForceForCalculate) {
+        if (player.teamWinner.equals(player.team)) {
+            playerForceForCalculate.loseStrike = 0;
+        } else {
+            playerForceForCalculate.loseStrike++;
+        }
+        playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike * 0.1f;
     }
 
     private void saveImprovementResult(int rightAnswers, int availableStatsIdsSize, Map<String, Object> mapForThisImprovement,

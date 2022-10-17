@@ -130,11 +130,28 @@ public class CalculatingService {
         List<Integer> availableStatsIds = calculatingReader.getAvailableStatsIdsOrdered();
         List<Integer> existingPlayerIds = calculatingReader
                 .getPlayerIdsWhoExistsInCalculatingMatches(availableStatsIds);
-        List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, false);
+        //List<PlayerForce> allPlayerForces = calculatingReader.getPlayerForceListByPlayerIds(existingPlayerIds, true);
         List<PlayerForce> newList = new ArrayList<>();
-        allPlayerForces.forEach(e -> {
-            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map, 0, 0));
-        });
+        if (queryFactory.from(playerForce).select(playerForce.playerId).fetch().isEmpty()) {
+            for (int map = 0; map < MapsEnum.values().length; map++) {
+                if(!Objects.equals(Arrays.stream(MapsEnum.values()).toList().get(map).toString(), "ALL")) {
+                    for (int i = 0; i < Config.playerForceTableSize; i++) {
+                        //новые игроки не должны иметь нулевую силу - приложение для тир10 команд будет считать легкую победу, что не так
+                        PlayerForce playerForce = new PlayerForce();
+                        playerForce.playerId = i;
+                        playerForce.playerForce = Config.playerForceDefault;
+                        playerForce.playerStability = Config.playerStability;
+                        playerForce.map = Arrays.stream(MapsEnum.values()).toList().get(map).toString();
+                        newList.add(playerForce);
+                    }
+                }
+            }
+        }
+        int index = Config.playerForceTableSize * MapsEnum.values().length-1;
+        //allPlayerForces.forEach(e -> {
+            //newList.add(new PlayerForce(e.id, e.playerId, Config.playerForceDefault, Config.playerStability, e.map, 0, 0));
+//            newList.add(new PlayerForce(e.id, e.playerId, e.playerForce, e.playerStability, e.map, 0, 0));
+        //});
 
         Map<Integer, List<PlayerForce>> playerForcesMap = newList.stream().collect(Collectors.groupingBy(e -> e.playerId));
         long now = System.currentTimeMillis();
@@ -157,8 +174,11 @@ public class CalculatingService {
                 PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
                         .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
                 playerForceForCalculate.playerForce += force;
+                winStrikeCalculation(player, playerForceForCalculate);
+                loseStrikeCalculation(player, playerForceForCalculate);
                 //Задаю лимиты для силы
-                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+                playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+//                playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
             });
         }
         System.out.println("Первичный расчет занял: " + (System.currentTimeMillis() - now) + " мс");
@@ -181,8 +201,11 @@ public class CalculatingService {
                     PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
                     playerForceForCalculate.playerForce += force;
+                    winStrikeCalculation(player, playerForceForCalculate);
+                    loseStrikeCalculation(player, playerForceForCalculate);
                     //Задаю лимиты для силы
-                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+                    playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+//                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -206,9 +229,37 @@ public class CalculatingService {
                 }
             }
         }
+        float max2 = 0;
+        for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
+            max2 = max2 < f? f: max2;
+        }
+        if (max2 > Config.highLimit) {
+            for (PlayerForce player : newList) {
+                player.playerForce = (player.playerForce / max2) * Config.highLimit;
+            }
+        }
         System.out.println("Расчет занял: " + (System.currentTimeMillis() - now) + " мс. Далее будет производиться запись в базу. Не отключать сервис/ не делать второй запрос!");
         List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
-        playerForceRepository.saveAll(changed);
+//        playerForceRepository.saveAll(changed);
+        playerForceRepository.saveAll(newList);
         System.out.println("Запись расчета в базу (вместе с расчетом) заняла: " + (System.currentTimeMillis() - now) + " мс");
+    }
+
+    private void winStrikeCalculation(PlayerOnMapResults player, PlayerForce playerForceForCalculate) {
+        if (player.teamWinner.equals(player.team)) {
+            playerForceForCalculate.winStrike++;
+        } else {
+            playerForceForCalculate.winStrike = 0;
+        }
+        playerForceForCalculate.playerForce += playerForceForCalculate.winStrike * 0.1f;
+    }
+
+    private void loseStrikeCalculation(PlayerOnMapResults player, PlayerForce playerForceForCalculate) {
+        if (player.teamWinner.equals(player.team)) {
+            playerForceForCalculate.loseStrike = 0;
+        } else {
+            playerForceForCalculate.loseStrike++;
+        }
+        playerForceForCalculate.playerForce -= playerForceForCalculate.loseStrike * 0.1f;
     }
 }

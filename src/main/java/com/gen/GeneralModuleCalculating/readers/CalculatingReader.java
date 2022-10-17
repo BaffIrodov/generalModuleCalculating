@@ -87,10 +87,25 @@ public class CalculatingReader {
     }
 
     public List<Integer> getPlayerIdsWhoExistsInCalculatingMatches(List<Integer> availableStatsIds) {
+        List<Integer> result = new ArrayList<>();
+        if(availableStatsIds.size() > 30000) {
+            int mpl = availableStatsIds.size() / 30000;
+            int size = availableStatsIds.size() / (mpl+1);
+            for(int i = 0; i < mpl+1; i++) {
+                List<Integer> subList = availableStatsIds.subList(i*(size), (i+1)*(size));
+                result.addAll(existingPlayersQuery(subList));
+            }
+            return result;
+        } else {
+            return existingPlayersQuery(availableStatsIds);
+        }
+    }
+
+    private List<Integer> existingPlayersQuery(List<Integer> availableStatsIds) {
         return queryFactory.from(playerOnMapResults)
                 .select(playerOnMapResults.playerId)
                 .where(playerOnMapResults.idStatsMap.in(availableStatsIds))
-                .distinct() //не может быть сильно большим числом
+                .distinct()
                 .fetch();
     }
 

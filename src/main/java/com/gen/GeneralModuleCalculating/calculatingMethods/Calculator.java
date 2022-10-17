@@ -60,11 +60,27 @@ public class Calculator {
     }
 
     public float correctLowAndHighLimit(float playerForceFloat) {
-        if(playerForceFloat > 10000) {
-            return 10000;
+        if(playerForceFloat > Config.highLimit) {
+            return Config.highLimit;
         }
         else if(playerForceFloat < Config.lowLimit) {
             return Config.lowLimit;
+        } else {
+            return playerForceFloat;
+        }
+    }
+
+    public float correctLowLimit(float playerForceFloat) {
+        if (playerForceFloat < Config.lowLimit) {
+            return Config.lowLimit;
+        } else {
+            return playerForceFloat;
+        }
+    }
+
+    public float correctHighLimit(float playerForceFloat) {
+        if(playerForceFloat > Config.highLimit) {
+            return Config.highLimit;
         } else {
             return playerForceFloat;
         }
