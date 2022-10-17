@@ -24,7 +24,7 @@ public class Config {
     public static float headshotsMultiplier = 0.02f;
     public static float ratingMultiplier = 0.8f;
     public static float historyMultiplier = 3;
-    public static float forceTeamMultiplier = 0.02f;
+    public static float forceTeamMultiplier = 0.01f;
     public static boolean isConsiderStabilityCorrection = true;
     public static boolean isConsiderDifferenceCorrection = false;
     public static int highLimit = 300;
