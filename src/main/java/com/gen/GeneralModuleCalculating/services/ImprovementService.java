@@ -122,7 +122,7 @@ public class ImprovementService {
     }
 
     public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
         Map<Integer, Integer> resultMap = new HashMap<>();
         for (int i = 0; i <= inactivePercent; i++) {
             requestDto.setInactiveDatasetPercent(inactivePercent - i);
@@ -238,25 +238,25 @@ public class ImprovementService {
                     differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
                 }
             }
-            float max2 = 0;
-            for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
-                max2 = max2 < f? f: max2;
-            }
-            if (max2 > Config.highLimit) {
-                for (PlayerForce player : newList) {
-                    player.playerForce = (player.playerForce / max2) * Config.highLimit;
-                }
+//            float max2 = 0;
+//            for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
+//                max2 = max2 < f? f: max2;
+//            }
+//            if (max2 > Config.highLimit) {
+//                for (PlayerForce player : newList) {
+//                    player.playerForce = (player.playerForce / max2) * Config.highLimit;
+//                }
+//            }
+        }
+        float max2 = 0;
+        for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
+            max2 = max2 < f? f: max2;
+        }
+        if (max2 > Config.highLimit) {
+            for (PlayerForce player : newList) {
+                player.playerForce = (player.playerForce / max2) * Config.highLimit;
             }
         }
-//        float max2 = 0;
-//        for (Float f : newList.stream().map(e -> e.playerForce).toList()) {
-//            max2 = max2 < f? f: max2;
-//        }
-//        if (max2 > Config.highLimit) {
-//            for (PlayerForce player : newList) {
-//                player.playerForce = (player.playerForce / max2) * Config.highLimit;
-//            }
-//        }
         List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
         Map<Integer, Integer> resultMap = calculateImprovementResult(availableStatsIdsTest,
                 allPlayersAnywhere, playerForcesMap, mapForThisImprovement, epochs);
