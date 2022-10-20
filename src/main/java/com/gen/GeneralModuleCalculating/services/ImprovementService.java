@@ -501,13 +501,13 @@ public class ImprovementService {
         List<Integer> wins = new ArrayList<>();
         List<Integer> all = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            forcesLow.add(i * 0.5f);
-            forcesHigh.add(i * 0.5f + 0.5f);
+            forcesLow.add(i * 1f);
+            forcesHigh.add(i * 1f + 1f);
             forcesLimits.add(forcesLow.get(i).toString() + " - " + forcesHigh.get(i).toString());
             wins.add(0);
             all.add(0);
         }
-        forcesLow.add(20 * 0.5f);
+        forcesLow.add(20 * 1f);
         forcesHigh.add(100000f);
         forcesLimits.add(forcesLow.get(20).toString() + " - " + forcesHigh.get(20).toString());
         wins.add(0);
