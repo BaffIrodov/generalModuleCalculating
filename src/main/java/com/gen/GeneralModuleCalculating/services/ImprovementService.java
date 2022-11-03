@@ -50,6 +50,9 @@ public class ImprovementService {
     RoundHistoryCalculator roundHistoryCalculator;
 
     @Autowired
+    PressureCalculator pressureCalculator;
+
+    @Autowired
     Calculator calculator;
 
     @Autowired
@@ -126,7 +129,7 @@ public class ImprovementService {
     }
 
     public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 15;
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
         Map<Integer, Integer> resultMap = new HashMap<>();
 //        List<String> forcesLimits = new ArrayList<>();
 //        List<Float> forcesLow = new ArrayList<>();
@@ -193,6 +196,16 @@ public class ImprovementService {
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                     .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
             List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+            List<Float> pressures = pressureCalculator.getPressure(history.roundSequence);
+//            Float leftHelpForce;
+//            Float rightHelpForce;
+//            if(players.get(0).teamWinner.equals("left")) {
+//                leftHelpForce = forces.get(0) + pressures.get(0);
+//                forces.set(0, leftHelpForce);
+//            } else {
+//                rightHelpForce = forces.get(1) + pressures.get(1);
+//                forces.set(1, rightHelpForce);
+//            }
             players.forEach(player -> {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
@@ -220,6 +233,16 @@ public class ImprovementService {
                 RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                         .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
                 List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+//                List<Float> pressures = pressureCalculator.getPressure(history.roundSequence);
+//                Float leftHelpForce;
+//                Float rightHelpForce;
+//                if(players.get(0).teamWinner.equals("right")) {
+//                    leftHelpForce = forces.get(0) + pressures.get(0);
+//                    forces.set(0, leftHelpForce);
+//                } else {
+//                    rightHelpForce = forces.get(1) + pressures.get(1);
+//                    forces.set(1, rightHelpForce);
+//                }
 //                int wow = i;
                 players.forEach(player -> {
 //                    index.getAndIncrement();
@@ -466,8 +489,8 @@ public class ImprovementService {
             if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                 percentRightAnswers++;
             }
-            if ((leftForce > rightForce + 50) || (rightForce > leftForce + 50)) constAllAnswers++;
-            if ((leftForce > rightForce + 50 && winner.equals("left")) || (rightForce > leftForce + 50 && winner.equals("right"))) {
+            if ((leftForce > rightForce + 100) || (rightForce > leftForce + 100)) constAllAnswers++;
+            if ((leftForce > rightForce + 100 && winner.equals("left")) || (rightForce > leftForce + 100 && winner.equals("right"))) {
                 constRightAnswers++;
             }
         }

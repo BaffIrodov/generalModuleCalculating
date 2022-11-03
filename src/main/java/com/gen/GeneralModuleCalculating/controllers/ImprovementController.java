@@ -35,10 +35,14 @@ public class ImprovementController {
         return CommonUtils.invokeConfig();
     }
 
+    @PostMapping("/inactive-percent")
+    public void improvementInactivePercent(@RequestBody ImprovementRequestDto request) {
+        improvementService.improvementByInactivePercent(request);
+    }
+
     @PostMapping("/no-config")
     public void improvementNoConfig(@RequestBody ImprovementRequestDto request) {
-//        improvementService.improvementByConsensus(request);
-        improvementService.improvementByInactivePercent(request);
+        improvementService.improvementTest(request);
     }
 
     @PostMapping("/with-config")
