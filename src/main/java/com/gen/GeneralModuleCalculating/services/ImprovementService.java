@@ -80,7 +80,7 @@ public class ImprovementService {
             new QImprovementResults("improvementResults");
 
     public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
+        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
         Map<Integer, Integer> resultMap = new HashMap<>();
         for (int i = 0; i <= inactivePercent; i++) {
             requestDto.setInactiveDatasetPercent(inactivePercent - i);
@@ -96,24 +96,6 @@ public class ImprovementService {
                 " матчей приходится " + right.get() +
                 " правильных ответов! Процент точности равен " +
                 (float) right.get() / all.get());
-    }
-
-    public void calculatingPlayerForcesForEveryMap(Boolean isFirstCalculating, PlayerOnMapResults player, List<Float> forces,
-                                                   List<PlayerOnMapResults> leftTeam, List<PlayerOnMapResults> rightTeam,
-                                                   Map<Integer, List<PlayerForce>> playerForcesMap, Integer finalCurrectId,
-                                                   List<Integer> availableStatsIdsTrain) {
-        float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
-                Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
-                isFirstCalculating, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
-        PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
-                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
-        playerForceForCalculate.playerForce += force;
-        if (Config.isConsiderWinStrike) winStrikeCalculation(player, playerForceForCalculate);
-        if (Config.isConsiderLoseStrike) loseStrikeCalculation(player, playerForceForCalculate);
-        //Задаю лимиты для силы
-        if (Config.isCorrectLowLimit) playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
-        if (Config.isCorrectHighLimit) playerForceForCalculate.playerForce = calculator.correctHighLimit(playerForceForCalculate.playerForce);
-        if (Config.isCorrectLowAndHighLimit) playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
     }
 
     public Map<Integer, Integer> improvementTest(ImprovementRequestDto requestDto) {
@@ -136,64 +118,82 @@ public class ImprovementService {
                 queryFactory.from(playerOnMapResults).transform(GroupBy.groupBy(playerOnMapResults.idStatsMap).as(GroupBy.list(playerOnMapResults)));
         for (Integer id : availableStatsIdsTrain) {
             currectId++;
-            Integer finalCurrectId = currectId;
-            List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
-            List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
-            List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
-            RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
-                    .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
-            List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
-            players.forEach(player -> {
-                calculatingPlayerForcesForEveryMap(true, player, forces, leftTeam, rightTeam,
-                        playerForcesMap, finalCurrectId, availableStatsIdsTrain);
-            });
+            calculatingTeamForcesForEveryMap(true, id, currectId, allPlayersAnywhere, playerForcesMap, availableStatsIdsTrain);
         }
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
             for (Integer id : availableStatsIdsTrain) {
                 currectId++;
-                Integer finalCurrectId = currectId;
-                List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
-                List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
-                List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
-                RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
-                        .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
-                List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
-                players.forEach(player -> {
-                    calculatingPlayerForcesForEveryMap(false, player, forces, leftTeam, rightTeam,
-                            playerForcesMap, finalCurrectId, availableStatsIdsTrain);
-                });
-                //подобие обратного распространения ошибки - считаем стабильность
-                List<PlayerForce> leftTeamForce = new ArrayList<>();
-                List<PlayerForce> rightTeamForce = new ArrayList<>();
-                players.forEach(p -> {
-                    if (p.team.equals("left")) {
-                        leftTeamForce.add(playerForcesMap.get(p.playerId)
-                                .stream().filter(e -> e.map.equals(p.playedMapString))
-                                .toList().get(0));
-                    } else {
-                        rightTeamForce.add(playerForcesMap.get(p.playerId)
-                                .stream().filter(e -> e.map.equals(p.playedMapString))
-                                .toList().get(0));
-                    }
-                });
-                if (Config.isConsiderStabilityCorrection) {
-                    stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
-                }
-                if (Config.isConsiderDifferenceCorrection) {
-                    differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
-                }
+                calculatingTeamForcesForEveryMap(false, id, currectId, allPlayersAnywhere, playerForcesMap, availableStatsIdsTrain);
             }
             if (Config.isPlayerForceCompressingInsideEpoch) playerForceCompressing(newList);
         }
         if (Config.isPlayerForceCompressingOutsideEpoch) playerForceCompressing(newList);
-        List<PlayerForce> changed = newList.stream().filter(e -> e.playerForce != Config.playerForceDefault || e.playerStability != Config.playerStability).toList();
         Map<Integer, Integer> resultMap = calculateImprovementResult(availableStatsIdsTest,
                 allPlayersAnywhere, playerForcesMap, mapForThisImprovement, epochs);
-//        Map<Map<Integer, List<PlayerOnMapResults>>, Map<Integer, List<PlayerForce>>> resultMap = new HashMap<>();
-//        resultMap.put(allPlayersAnywhere, playerForcesMap);
         return resultMap;
+    }
+
+    public void calculatingTeamForcesForEveryMap(Boolean isFirstCalculating, Integer id, Integer currectId,
+                                                 Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere,
+                                                 Map<Integer, List<PlayerForce>> playerForcesMap,
+                                                 List<Integer> availableStatsIdsTrain) {
+        Integer finalCurrectId = currectId;
+        List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
+        List<PlayerOnMapResults> leftTeam = players.stream().filter(e -> e.team.equals("left")).toList();
+        List<PlayerOnMapResults> rightTeam = players.stream().filter(e -> e.team.equals("right")).toList();
+        RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
+                .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
+        List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
+        players.forEach(player -> {
+            calculatingPlayerForcesForEveryMap(isFirstCalculating, player, forces, leftTeam, rightTeam,
+                    playerForcesMap, finalCurrectId, availableStatsIdsTrain);
+        });
+        stabilityCalculation(isFirstCalculating, players, playerForcesMap);
+    }
+
+    public void calculatingPlayerForcesForEveryMap(Boolean isFirstCalculating, PlayerOnMapResults player, List<Float> forces,
+                                                   List<PlayerOnMapResults> leftTeam, List<PlayerOnMapResults> rightTeam,
+                                                   Map<Integer, List<PlayerForce>> playerForcesMap, Integer finalCurrectId,
+                                                   List<Integer> availableStatsIdsTrain) {
+        float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
+                Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
+                isFirstCalculating, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
+        PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+        playerForceForCalculate.playerForce += force;
+        if (Config.isConsiderWinStrike) winStrikeCalculation(player, playerForceForCalculate);
+        if (Config.isConsiderLoseStrike) loseStrikeCalculation(player, playerForceForCalculate);
+        //Задаю лимиты для силы
+        if (Config.isCorrectLowLimit) playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+        if (Config.isCorrectHighLimit) playerForceForCalculate.playerForce = calculator.correctHighLimit(playerForceForCalculate.playerForce);
+        if (Config.isCorrectLowAndHighLimit) playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+    }
+
+    public void stabilityCalculation(Boolean isFirstCalculating, List<PlayerOnMapResults> players, Map<Integer, List<PlayerForce>> playerForcesMap) {
+        if (!isFirstCalculating) {
+            //подобие обратного распространения ошибки - считаем стабильность
+            List<PlayerForce> leftTeamForce = new ArrayList<>();
+            List<PlayerForce> rightTeamForce = new ArrayList<>();
+            players.forEach(p -> {
+                if (p.team.equals("left")) {
+                    leftTeamForce.add(playerForcesMap.get(p.playerId)
+                            .stream().filter(e -> e.map.equals(p.playedMapString))
+                            .toList().get(0));
+                } else {
+                    rightTeamForce.add(playerForcesMap.get(p.playerId)
+                            .stream().filter(e -> e.map.equals(p.playedMapString))
+                            .toList().get(0));
+                }
+            });
+            if (Config.isConsiderStabilityCorrection) {
+                stabilityCalculator.calculateCorrectedStability(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+            }
+            if (Config.isConsiderDifferenceCorrection) {
+                differenceCalculator.calculateTeamsDifference(leftTeamForce, rightTeamForce, players.get(0).teamWinner);
+            }
+        }
     }
 
     public void playerForceCompressing(List<PlayerForce> newList) {
