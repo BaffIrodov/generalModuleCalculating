@@ -85,6 +85,8 @@ public class CommonUtils {
         Config.isConsiderActiveMaps = Boolean.getBoolean(config.get("isConsiderActiveMaps").toString());
         Config.isConsiderStabilityCorrection = Boolean.getBoolean(config.get("isConsiderStabilityCorrection").toString());
         Config.isConsiderDifferenceCorrection = Boolean.getBoolean(config.get("isConsiderDifferenceCorrection").toString());
+        Config.isPlayerForceCompressingInsideEpoch = Boolean.getBoolean(config.get("isPlayerForceCompressingInsideEpoch").toString());
+        Config.isPlayerForceCompressingOutsideEpoch = Boolean.getBoolean(config.get("isPlayerForceCompressingOutsideEpoch").toString());
         Config.playerForceTableSize = Integer.parseInt(this.helpInt(config, "playerForceTableSize"));
         Config.playerForceDefault = Float.parseFloat(config.get("playerForceDefault").toString());
         Config.playerStability = Integer.parseInt(this.helpInt(config, "playerStability"));
@@ -95,6 +97,8 @@ public class CommonUtils {
         mapValueByFieldName.put("isConsiderActiveMaps", Config.isConsiderActiveMaps);
         mapValueByFieldName.put("isConsiderStabilityCorrection", Config.isConsiderStabilityCorrection);
         mapValueByFieldName.put("isConsiderDifferenceCorrection", Config.isConsiderDifferenceCorrection);
+        mapValueByFieldName.put("isPlayerForceCompressingInsideEpoch", Config.isPlayerForceCompressingInsideEpoch);
+        mapValueByFieldName.put("isPlayerForceCompressingOutsideEpoch", Config.isPlayerForceCompressingOutsideEpoch);
         mapValueByFieldName.put("epochsNumber", Config.epochsNumber);
         mapValueByFieldName.put("highLimit", Config.highLimit);
         mapValueByFieldName.put("lowLimit", Config.lowLimit);

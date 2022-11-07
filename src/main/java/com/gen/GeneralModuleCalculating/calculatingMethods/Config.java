@@ -27,6 +27,8 @@ public class Config {
     public static float forceTeamMultiplier = 0.02f;
     public static boolean isConsiderStabilityCorrection = true;
     public static boolean isConsiderDifferenceCorrection = false;
+    public static boolean isPlayerForceCompressingInsideEpoch = false;
+    public static boolean isPlayerForceCompressingOutsideEpoch = true;
     public static int highLimit = 300;
     public static int lowLimit = 5;
     public static float actualityMultiplier = 0.2f;
