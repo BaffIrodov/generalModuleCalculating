@@ -32,6 +32,7 @@ public class Config {
     public static float actualityMultiplier = 0.2f;
     public static float actualityConst = 0.9f;
     public static float compareMultiplier = 3f;
+    public static float compareSummand = 200;
     public static float differencePercent = 0.1f;
 
     //адр

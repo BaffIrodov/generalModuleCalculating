@@ -196,16 +196,6 @@ public class ImprovementService {
             RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                     .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
             List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
-            List<Float> pressures = pressureCalculator.getPressure(history.roundSequence);
-//            Float leftHelpForce;
-//            Float rightHelpForce;
-//            if(players.get(0).teamWinner.equals("left")) {
-//                leftHelpForce = forces.get(0) + pressures.get(0);
-//                forces.set(0, leftHelpForce);
-//            } else {
-//                rightHelpForce = forces.get(1) + pressures.get(1);
-//                forces.set(1, rightHelpForce);
-//            }
             players.forEach(player -> {
                 float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                         Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
@@ -223,7 +213,6 @@ public class ImprovementService {
         currectId = 0;
         int epochs = Config.epochsNumber;
         for (int i = 0; i < epochs; i++) {
-//            AtomicInteger index = new AtomicInteger();
             for (Integer id : availableStatsIdsTrain) {
                 currectId++;
                 Integer finalCurrectId = currectId;
@@ -233,23 +222,10 @@ public class ImprovementService {
                 RoundHistory history = (RoundHistory) queryFactory.from(roundHistory)
                         .where(roundHistory.idStatsMap.eq(id)).fetchFirst();
                 List<Float> forces = roundHistoryCalculator.getTeamForces(history.roundSequence, history.leftTeamIsTerroristsInFirstHalf);
-//                List<Float> pressures = pressureCalculator.getPressure(history.roundSequence);
-//                Float leftHelpForce;
-//                Float rightHelpForce;
-//                if(players.get(0).teamWinner.equals("right")) {
-//                    leftHelpForce = forces.get(0) + pressures.get(0);
-//                    forces.set(0, leftHelpForce);
-//                } else {
-//                    rightHelpForce = forces.get(1) + pressures.get(1);
-//                    forces.set(1, rightHelpForce);
-//                }
-//                int wow = i;
                 players.forEach(player -> {
-//                    index.getAndIncrement();
                     float force = calculator.calculatePlayerForce(player, forces, Config.adrMultiplier,
                             Config.killsMultiplier, Config.headshotsMultiplier, Config.ratingMultiplier, Config.historyMultiplier, Config.forceTeamMultiplier,
                             false, player.team.equals("left") ? rightTeam : leftTeam, playerForcesMap, finalCurrectId, availableStatsIdsTrain.size());
-                    //if (!player.team.equals(player.teamWinner)) force -= 3f;
                     PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
                             .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
                     playerForceForCalculate.playerForce += force;
@@ -258,13 +234,6 @@ public class ImprovementService {
                     //Задаю лимиты для силы
                     playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
 //                    playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
-
-
-//                    if (player.playerId == 29) {
-//
-//                        System.out.println("Эпоха: " + wow + "| Id игры: " + id + "| Сила игрока: " +  playerForcesMap.get(player.playerId).stream()
-//                                .filter(e -> e.map.equals("MIRAGE")).toList().get(0).playerForce);
-//                    }
                 });
                 //подобие обратного распространения ошибки - считаем стабильность
                 List<PlayerForce> leftTeamForce = new ArrayList<>();
@@ -489,22 +458,18 @@ public class ImprovementService {
             if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
                 percentRightAnswers++;
             }
-            if ((leftForce > rightForce + 100) || (rightForce > leftForce + 100)) constAllAnswers++;
-            if ((leftForce > rightForce + 100 && winner.equals("left")) || (rightForce > leftForce + 100 && winner.equals("right"))) {
+            if ((leftForce > rightForce + Config.compareSummand) || (rightForce > leftForce + Config.compareSummand)) constAllAnswers++;
+            if ((leftForce > rightForce + Config.compareSummand && winner.equals("left")) || (rightForce > leftForce + Config.compareSummand && winner.equals("right"))) {
                 constRightAnswers++;
             }
         }
-        saveImprovementResult(rightAnswers, availableStatsIdsTest.size(), mapForThisImprovement, currectEpoch);
-        //System.out.println("Эпоха номер: " + (currectEpoch) + ". На " + availableStatsIdsTest.size() +
-        //        " матчей приходится " + rightAnswers +
-        //        " правильных ответов! Процент точности равен " +
-        //        (float) rightAnswers / availableStatsIdsTest.size());
         System.out.println("(Процент) Эпоха номер: " + (currectEpoch) + ". На " + percentAllAnswers +
                 " матчей приходится " + percentRightAnswers +
                 " правильных ответов! Процент точности равен " +
                 (float) percentRightAnswers / percentAllAnswers +
                 " Общая доля равна: " + (float) percentAllAnswers/availableStatsIdsTest.size() +
                 " (количество игр тестовой базы: " + availableStatsIdsTest.size() + ")");
+        saveImprovementResult(percentRightAnswers, percentAllAnswers, mapForThisImprovement, currectEpoch);
         System.out.println("(Константа) Эпоха номер: " + (currectEpoch) + ". На " + constAllAnswers +
                 " матчей приходится " + constRightAnswers +
                 " правильных ответов! Процент точности равен " +

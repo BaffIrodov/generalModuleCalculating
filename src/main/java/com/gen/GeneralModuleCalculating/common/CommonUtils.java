@@ -53,6 +53,7 @@ public class CommonUtils {
         Config.actualityMultiplier = Float.parseFloat(config.get("actualityMultiplier").toString());
         Config.actualityConst = Float.parseFloat(config.get("actualityConst").toString());
         Config.compareMultiplier = Float.parseFloat(config.get("compareMultiplier").toString());
+        Config.compareSummand = Float.parseFloat(config.get("compareSummand").toString());
         Config.differencePercent = Float.parseFloat(config.get("differencePercent").toString());
         Config.normalizingCoeffAdr = Float.parseFloat(config.get("normalizingCoeffAdr").toString());
         Config.zeroCoeffFuncAdr = Float.parseFloat(config.get("zeroCoeffFuncAdr").toString());
@@ -100,6 +101,7 @@ public class CommonUtils {
         mapValueByFieldName.put("actualityMultiplier", Config.actualityMultiplier);
         mapValueByFieldName.put("actualityConst", Config.actualityConst);
         mapValueByFieldName.put("compareMultiplier", Config.compareMultiplier);
+        mapValueByFieldName.put("compareSummand", Config.compareSummand);
         mapValueByFieldName.put("differencePercent", Config.differencePercent);
         mapValueByFieldName.put("calculatingStatsIdNumber", Config.calculatingStatsIdNumber);
         mapValueByFieldName.put("adrMultiplier", Config.adrMultiplier);
