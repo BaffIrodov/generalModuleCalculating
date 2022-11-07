@@ -16,6 +16,8 @@ public class Config {
      * x^0.6 - для обеих осей
      */
 
+    //TODO надо отсортировать все переменные
+
     // global calculating settings
     public static int calculatingStatsIdNumber = 0; //Сколько забираем из базы последних игр. 0 - забираем всё
     public static int epochsNumber = 2; //количество эпох при расчете
@@ -29,13 +31,24 @@ public class Config {
     public static boolean isConsiderDifferenceCorrection = false;
     public static boolean isPlayerForceCompressingInsideEpoch = false;
     public static boolean isPlayerForceCompressingOutsideEpoch = true;
-    public static int highLimit = 300;
-    public static int lowLimit = 5;
     public static float actualityMultiplier = 0.2f;
     public static float actualityConst = 0.9f;
     public static float compareMultiplier = 3f;
-    public static float compareSummand = 200;
+    public static float compareSummand = 200f;
     public static float differencePercent = 0.1f;
+
+    //high and low limits
+    public static int highLimit = 300;
+    public static int lowLimit = 5;
+    public static boolean isCorrectLowLimit = true;
+    public static boolean isCorrectHighLimit = false;
+    public static boolean isCorrectLowAndHighLimit = false;
+
+    //winstrike and losestrike
+    public static boolean isConsiderWinStrike = true;
+    public static boolean isConsiderLoseStrike = true;
+    public static float winStrikeMultiplier = 0.1f;
+    public static float loseStrikeMultiplier = 0.1f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент

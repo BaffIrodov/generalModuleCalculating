@@ -87,6 +87,13 @@ public class CommonUtils {
         Config.isConsiderDifferenceCorrection = Boolean.getBoolean(config.get("isConsiderDifferenceCorrection").toString());
         Config.isPlayerForceCompressingInsideEpoch = Boolean.getBoolean(config.get("isPlayerForceCompressingInsideEpoch").toString());
         Config.isPlayerForceCompressingOutsideEpoch = Boolean.getBoolean(config.get("isPlayerForceCompressingOutsideEpoch").toString());
+        Config.isCorrectLowLimit = Boolean.getBoolean(config.get("isCorrectLowLimit").toString());
+        Config.isCorrectHighLimit = Boolean.getBoolean(config.get("isCorrectHighLimit").toString());
+        Config.isCorrectLowAndHighLimit = Boolean.getBoolean(config.get("isCorrectLowAndHighLimit").toString());
+        Config.isConsiderWinStrike = Boolean.getBoolean(config.get("isConsiderWinStrike").toString());
+        Config.isConsiderLoseStrike = Boolean.getBoolean(config.get("isConsiderLoseStrike").toString());
+        Config.winStrikeMultiplier = Float.parseFloat(config.get("winStrikeMultiplier").toString());
+        Config.loseStrikeMultiplier = Float.parseFloat(config.get("loseStrikeMultiplier").toString());
         Config.playerForceTableSize = Integer.parseInt(this.helpInt(config, "playerForceTableSize"));
         Config.playerForceDefault = Float.parseFloat(config.get("playerForceDefault").toString());
         Config.playerStability = Integer.parseInt(this.helpInt(config, "playerStability"));
@@ -99,6 +106,11 @@ public class CommonUtils {
         mapValueByFieldName.put("isConsiderDifferenceCorrection", Config.isConsiderDifferenceCorrection);
         mapValueByFieldName.put("isPlayerForceCompressingInsideEpoch", Config.isPlayerForceCompressingInsideEpoch);
         mapValueByFieldName.put("isPlayerForceCompressingOutsideEpoch", Config.isPlayerForceCompressingOutsideEpoch);
+        mapValueByFieldName.put("isCorrectLowLimit", Config.isCorrectLowLimit);
+        mapValueByFieldName.put("isCorrectHighLimit", Config.isCorrectHighLimit);
+        mapValueByFieldName.put("isCorrectLowAndHighLimit", Config.isCorrectLowAndHighLimit);
+        mapValueByFieldName.put("isConsiderWinStrike", Config.isConsiderWinStrike);
+        mapValueByFieldName.put("isConsiderLoseStrike", Config.isConsiderLoseStrike);
         mapValueByFieldName.put("epochsNumber", Config.epochsNumber);
         mapValueByFieldName.put("highLimit", Config.highLimit);
         mapValueByFieldName.put("lowLimit", Config.lowLimit);
@@ -106,6 +118,8 @@ public class CommonUtils {
         mapValueByFieldName.put("actualityConst", Config.actualityConst);
         mapValueByFieldName.put("compareMultiplier", Config.compareMultiplier);
         mapValueByFieldName.put("compareSummand", Config.compareSummand);
+        mapValueByFieldName.put("winStrikeMultiplier", Config.winStrikeMultiplier);
+        mapValueByFieldName.put("loseStrikeMultiplier", Config.loseStrikeMultiplier);
         mapValueByFieldName.put("differencePercent", Config.differencePercent);
         mapValueByFieldName.put("calculatingStatsIdNumber", Config.calculatingStatsIdNumber);
         mapValueByFieldName.put("adrMultiplier", Config.adrMultiplier);
