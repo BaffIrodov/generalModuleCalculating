@@ -14,6 +14,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,7 +37,7 @@ public class ImprovementController {
     }
 
     @PostMapping("/inactive-percent")
-    public void improvementInactivePercent(@RequestBody ImprovementRequestDto request) {
+    public void improvementInactivePercent(@RequestBody ImprovementRequestDto request) throws IOException, InterruptedException {
         improvementService.improvementByInactivePercent(request);
     }
 

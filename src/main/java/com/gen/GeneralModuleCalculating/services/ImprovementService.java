@@ -14,10 +14,48 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.datavec.api.records.reader.RecordReader;
+import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
+import org.datavec.api.split.FileSplit;
+import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
+import org.deeplearning4j.datasets.iterator.callbacks.DataSetDeserializer;
+import org.deeplearning4j.eval.Evaluation;
+import org.deeplearning4j.nn.api.Model;
+import org.deeplearning4j.nn.api.OptimizationAlgorithm;
+import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.Updater;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
+import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.weights.WeightInit;
+import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
+import org.deeplearning4j.ui.standalone.ClassPathResource;
+import org.nd4j.linalg.activations.Activation;
+import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.dataset.SplitTestAndTrain;
+import org.nd4j.linalg.dataset.api.DataSet;
+import org.nd4j.linalg.dataset.api.DataSetUtil;
+import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.dataset.api.iterator.SamplingDataSetIterator;
+import org.nd4j.linalg.dataset.api.iterator.fetcher.DataSetFetcher;
+import org.nd4j.linalg.dataset.api.preprocessor.DataNormalization;
+import org.nd4j.linalg.dataset.api.preprocessor.NormalizerStandardize;
+import org.nd4j.linalg.factory.Nd4j;
+import org.nd4j.linalg.lossfunctions.LossFunctions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ResourceUtils;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -79,23 +117,175 @@ public class ImprovementService {
     private static final QImprovementResults improvementResults =
             new QImprovementResults("improvementResults");
 
-    public void improvementByInactivePercent(ImprovementRequestDto requestDto) {
-        Integer inactivePercent = requestDto.getTestDatasetPercent() * 10;
-        Map<Integer, Integer> resultMap = new HashMap<>();
-        for (int i = 0; i <= inactivePercent; i++) {
-            requestDto.setInactiveDatasetPercent(inactivePercent - i);
-            resultMap.putAll(improvementTest(requestDto));
+    public void improvementByInactivePercent(ImprovementRequestDto requestDto) throws IOException, InterruptedException {
+        getPredicted();
+//        int seed = 123;
+//        double learningRate = 0.005;
+//        int batchSize = 1000;
+//        int nEpochs = 10;
+//
+//        int numInputs = 20;
+//        int numOutputs = 2;
+//        int[] numHiddenNodes = {30, 60, 60, 30};
+//
+//        final String filenameTrain = ResourceUtils.getFile("classpath:neuro/train.txt").getPath();
+//        final String filenameTest = ResourceUtils.getFile("classpath:neuro/test.txt").getPath();
+//
+//        RecordReader rr = new CSVRecordReader(0, ',');
+//        rr.initialize(new FileSplit(new File(filenameTrain)));
+//        DataSetIterator trainIter = new RecordReaderDataSetIterator(rr, batchSize, 20, 2);
+//
+//        RecordReader rrTest = new CSVRecordReader(0, ',');
+//        rrTest.initialize(new FileSplit(new File(filenameTest)));
+//        DataSetIterator testIter = new RecordReaderDataSetIterator(rrTest, batchSize, 20, 2);
+//
+//        MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+//                .seed(seed)
+//                .iterations(1)
+//                .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+//                .learningRate(learningRate)
+//                .updater(Updater.NESTEROVS)
+//                .list()
+//                .layer(0, new DenseLayer.Builder().nIn(numInputs).nOut(numHiddenNodes[0])
+//                        .weightInit(WeightInit.XAVIER)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(1, new DenseLayer.Builder().nIn(numHiddenNodes[0]).nOut(numHiddenNodes[1])
+//                        .weightInit(WeightInit.XAVIER)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(2, new DenseLayer.Builder().nIn(numHiddenNodes[1]).nOut(numHiddenNodes[2])
+//                        .weightInit(WeightInit.XAVIER)
+//                        .activation(Activation.RELU)
+//                        .build())
+//                .layer(3, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+//                        .weightInit(WeightInit.XAVIER)
+//                        .activation(Activation.SOFTMAX)
+//                        .nIn(numHiddenNodes[2]).nOut(numOutputs).build())
+//                .pretrain(false).backprop(true).build();
+//        MultiLayerNetwork model = new MultiLayerNetwork(conf);
+//        model.init();
+//        model.setListeners(new ScoreIterationListener(100));
+//
+//        for ( int n = 0; n < nEpochs; n++) {
+//            model.fit( trainIter );
+//        }
+//
+//        Evaluation eval = new Evaluation(numOutputs);
+//        List<Float> resList = new ArrayList<>();
+//        while (testIter.hasNext()) {
+//            DataSet t = testIter.next();
+//            INDArray features = t.getFeatures();
+//            INDArray labels = t.getLabels();
+//            INDArray predicted = model.output(features, false);
+//            for(int i = 0; i < (predicted.length()/2)-1; i++) {
+//                resList.add(Float.parseFloat(predicted.getRow(i).getColumn(0).toString()) - Float.parseFloat(predicted.getRow(i).getColumn(1).toString()));
+//            }
+//            predicted.getRow(0);
+//            eval.eval(labels, predicted);
+//        }
+//
+//        System.out.println(eval.stats());
+
+
+
+//        Integer inactivePercent = requestDto.getTestDatasetPercent() * 5;
+//        Map<Integer, Integer> resultMap = new HashMap<>();
+//        for (int i = 0; i <= inactivePercent; i++) {
+//            requestDto.setInactiveDatasetPercent(inactivePercent - i);
+//            resultMap.putAll(improvementTest(requestDto));
+//        }
+//        AtomicReference<Integer> right = new AtomicReference<>(0);
+//        AtomicReference<Integer> all = new AtomicReference<>(0);
+//        resultMap.forEach((k, v) -> {
+//            right.updateAndGet(v1 -> v1 + k);
+//            all.updateAndGet(v1 -> v1 + v);
+//        });
+//        System.out.println("!Сводный результат! На " + all.get() +
+//                " матчей приходится " + right.get() +
+//                " правильных ответов! Процент точности равен " +
+//                (float) right.get() / all.get());
+    }
+
+    private List<Float> getPredicted() {
+        List<Float> resList = new ArrayList<>();
+        try {
+            int seed = 123;
+            double learningRate = 0.05;
+            int batchSize = 1000;
+            int nEpochs = 5;
+
+            int numInputs = 10;
+            int numOutputs = 2;
+            int[] numHiddenNodes = {30, 60, 60, 60, 30};
+
+            final String filenameTrain = ResourceUtils.getFile("classpath:neuro/train.txt").getPath();
+            final String filenameTest = ResourceUtils.getFile("classpath:neuro/test.txt").getPath();
+
+            RecordReader rr = new CSVRecordReader(0, ',');
+            rr.initialize(new FileSplit(new File(filenameTrain)));
+            DataSetIterator trainIter = new RecordReaderDataSetIterator(rr, batchSize, 10, 2);
+
+            RecordReader rrTest = new CSVRecordReader(0, ',');
+            rrTest.initialize(new FileSplit(new File(filenameTest)));
+            DataSetIterator testIter = new RecordReaderDataSetIterator(rrTest, batchSize, 10, 2);
+
+            MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+                    .seed(seed)
+                    .iterations(1)
+                    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+                    .learningRate(learningRate)
+                    .updater(Updater.NESTEROVS)
+                    .list()
+                    .layer(0, new DenseLayer.Builder().nIn(numInputs).nOut(numHiddenNodes[0])
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.RELU)
+                            .build())
+                    .layer(1, new DenseLayer.Builder().nIn(numHiddenNodes[0]).nOut(numHiddenNodes[1])
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.RELU)
+                            .build())
+                    .layer(2, new DenseLayer.Builder().nIn(numHiddenNodes[1]).nOut(numHiddenNodes[2])
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.RELU)
+                            .build())
+                    .layer(3, new DenseLayer.Builder().nIn(numHiddenNodes[2]).nOut(numHiddenNodes[3])
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.RELU)
+                            .build())
+                    .layer(4, new DenseLayer.Builder().nIn(numHiddenNodes[3]).nOut(numHiddenNodes[4])
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.RELU)
+                            .build())
+                    .layer(5, new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+                            .weightInit(WeightInit.XAVIER)
+                            .activation(Activation.SOFTMAX)
+                            .nIn(numHiddenNodes[4]).nOut(numOutputs).build())
+                    .pretrain(false).backprop(true).build();
+            MultiLayerNetwork model = new MultiLayerNetwork(conf);
+            model.init();
+            model.setListeners(new ScoreIterationListener(100));
+
+            for (int n = 0; n < nEpochs; n++) {
+                model.fit(trainIter);
+            }
+
+            Evaluation eval = new Evaluation(numOutputs);
+            while (testIter.hasNext()) {
+                DataSet t = testIter.next();
+                INDArray features = t.getFeatures();
+                INDArray labels = t.getLabels();
+                INDArray predicted = model.output(features, false);
+                for (int i = 0; i < (predicted.length() / 2); i++) {
+                    resList.add(Float.parseFloat(predicted.getRow(i).getColumn(0).toString()) - Float.parseFloat(predicted.getRow(i).getColumn(1).toString()));
+                }
+                eval.eval(labels, predicted);
+            }
+            System.out.println(eval.stats());
+        } catch (Exception e) {
+            //nothing
         }
-        AtomicReference<Integer> right = new AtomicReference<>(0);
-        AtomicReference<Integer> all = new AtomicReference<>(0);
-        resultMap.forEach((k, v) -> {
-            right.updateAndGet(v1 -> v1 + k);
-            all.updateAndGet(v1 -> v1 + v);
-        });
-        System.out.println("!Сводный результат! На " + all.get() +
-                " матчей приходится " + right.get() +
-                " правильных ответов! Процент точности равен " +
-                (float) right.get() / all.get());
+        return resList;
     }
 
     public Map<Integer, Integer> improvementTest(ImprovementRequestDto requestDto) {
@@ -130,7 +320,7 @@ public class ImprovementService {
             if (Config.isPlayerForceCompressingInsideEpoch) playerForceCompressing(newList);
         }
         if (Config.isPlayerForceCompressingOutsideEpoch) playerForceCompressing(newList);
-        Map<Integer, Integer> resultMap = calculateImprovementResult(availableStatsIdsTest,
+        Map<Integer, Integer> resultMap = calculateImprovementResult(availableStatsIdsTest, availableStatsIdsTrain,
                 allPlayersAnywhere, playerForcesMap, mapForThisImprovement, epochs);
         return resultMap;
     }
@@ -166,9 +356,12 @@ public class ImprovementService {
         if (Config.isConsiderWinStrike) winStrikeCalculation(player, playerForceForCalculate);
         if (Config.isConsiderLoseStrike) loseStrikeCalculation(player, playerForceForCalculate);
         //Задаю лимиты для силы
-        if (Config.isCorrectLowLimit) playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
-        if (Config.isCorrectHighLimit) playerForceForCalculate.playerForce = calculator.correctHighLimit(playerForceForCalculate.playerForce);
-        if (Config.isCorrectLowAndHighLimit) playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
+        if (Config.isCorrectLowLimit)
+            playerForceForCalculate.playerForce = calculator.correctLowLimit(playerForceForCalculate.playerForce);
+        if (Config.isCorrectHighLimit)
+            playerForceForCalculate.playerForce = calculator.correctHighLimit(playerForceForCalculate.playerForce);
+        if (Config.isCorrectLowAndHighLimit)
+            playerForceForCalculate.playerForce = calculator.correctLowAndHighLimit(playerForceForCalculate.playerForce);
     }
 
     public void stabilityCalculation(Boolean isFirstCalculating, List<PlayerOnMapResults> players, Map<Integer, List<PlayerForce>> playerForcesMap) {
@@ -208,17 +401,56 @@ public class ImprovementService {
         }
     }
 
-    public Map<Integer, Integer> calculateImprovementResult(List<Integer> availableStatsIdsTest,
+    public Map<Integer, Integer> calculateImprovementResult(List<Integer> availableStatsIdsTest, List<Integer> availableStatsIdsTrain,
                                                             Map<Integer, List<PlayerOnMapResults>> allPlayersAnywhere,
                                                             Map<Integer, List<PlayerForce>> playerForcesMap,
                                                             Map<String, Object> mapForThisImprovement, int currectEpoch) {
+
+        try {
+            PrintWriter writer = new PrintWriter("train.txt", "UTF-8");
+            for(int idTrain: availableStatsIdsTrain) {
+                List<PlayerOnMapResults> players = allPlayersAnywhere.get(idTrain);
+                players.forEach(player -> {
+                    PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                    writer.print(String.format(Locale.US, "%.2f", playerForceForCalculate.playerForce / Config.highLimit));
+                    writer.print(',');
+//                    writer.print(String.format(Locale.US, "%.2f", (float) playerForceForCalculate.playerStability / 100));
+//                    writer.print(',');
+                });
+                int res = players.get(0).teamWinner.equals("left") ? 1 : 0;
+                writer.println(res);
+            }
+            writer.close();
+            PrintWriter writerTest = new PrintWriter("test.txt", "UTF-8");
+            for(int idTrain: availableStatsIdsTest) {
+                List<PlayerOnMapResults> players = allPlayersAnywhere.get(idTrain);
+                players.forEach(player -> {
+                    PlayerForce playerForceForCalculate = playerForcesMap.get(player.playerId).stream()
+                            .filter(e -> e.map.equals(player.playedMapString)).toList().get(0);
+                    writerTest.print(String.format(Locale.US, "%.2f", playerForceForCalculate.playerForce / Config.highLimit));
+                    writerTest.print(',');
+//                    writerTest.print(String.format(Locale.US, "%.2f", (float) playerForceForCalculate.playerStability / 100));
+//                    writerTest.print(',');
+                });
+                int res = players.get(0).teamWinner.equals("left") ? 1 : 0;
+                writerTest.println(res);
+            }
+            writerTest.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
         Map<Integer, Integer> resultMap = new HashMap<>();
         Integer rightAnswers = 0;
         Integer percentRightAnswers = 0;
         Integer percentAllAnswers = 0;
         Integer constRightAnswers = 0;
         Integer constAllAnswers = 0;
+        List<Float> resList = getPredicted();
+        int index = 0;
         for (Integer id : availableStatsIdsTest) {
+            Float resultPredict = resList.get(index);
+            index++;
             List<PlayerOnMapResults> players = allPlayersAnywhere.get(id);
             Float leftForce = 0f;
             Float rightForce = 0f;
@@ -250,9 +482,11 @@ public class ImprovementService {
             if ((leftForce > rightForce && winner.equals("left")) || (rightForce > leftForce && winner.equals("right"))) {
                 rightAnswers++;
             }
-            if ((leftForce > rightForce * Config.compareMultiplier) || (rightForce > leftForce * Config.compareMultiplier))
+            if ((leftForce > rightForce * Config.compareMultiplier && resultPredict < -0.2)
+                    || (rightForce > leftForce * Config.compareMultiplier && resultPredict > 0.2))
                 percentAllAnswers++;
-            if ((leftForce > rightForce * Config.compareMultiplier && winner.equals("left")) || (rightForce > leftForce * Config.compareMultiplier && winner.equals("right"))) {
+            if ((leftForce > rightForce * Config.compareMultiplier && resultPredict < -0.2 && winner.equals("left"))
+                    || (rightForce > leftForce * Config.compareMultiplier && resultPredict > 0.2 && winner.equals("right"))) {
                 percentRightAnswers++;
             }
             if ((leftForce > rightForce + Config.compareSummand) || (rightForce > leftForce + Config.compareSummand))
