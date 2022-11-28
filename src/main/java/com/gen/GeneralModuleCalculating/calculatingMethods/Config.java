@@ -20,26 +20,26 @@ public class Config {
 
     // global calculating settings
     public static int calculatingStatsIdNumber = 0; //Сколько забираем из базы последних игр. 0 - забираем всё
-    public static int epochsNumber = 2; //количество эпох при расчете
-    public static float adrMultiplier = 0.6f;
-    public static float killsMultiplier = 0.8f;
-    public static float headshotsMultiplier = 0.02f;
-    public static float ratingMultiplier = 0.8f;
-    public static float historyMultiplier = 3;
-    public static float forceTeamMultiplier = 0.02f;
+    public static int epochsNumber = 1; //количество эпох при расчете
+    public static float adrMultiplier = 0.448f;
+    public static float killsMultiplier = 0.7807f;
+    public static float headshotsMultiplier = 0.01521f;
+    public static float ratingMultiplier = 0.99607f;
+    public static float historyMultiplier = 3.16796f;
+    public static float forceTeamMultiplier = 0.0270774f;
     public static boolean isConsiderStabilityCorrection = true;
     public static boolean isConsiderDifferenceCorrection = false;
     public static boolean isPlayerForceCompressingInsideEpoch = false;
     public static boolean isPlayerForceCompressingOutsideEpoch = true;
-    public static float actualityMultiplier = 0.2f;
-    public static float actualityConst = 0.9f;
-    public static float compareMultiplier = 3f;
-    public static float compareSummand = 200f;
-    public static float differencePercent = 0.1f;
+    public static float actualityMultiplier = 0.12794f;
+    public static float actualityConst = 0.9154f;
+    public static float compareMultiplier = 2.95245f;
+    public static float compareSummand = 196.22f;
+    public static float differencePercent = 0.00573f;
 
     //high and low limits
-    public static int highLimit = 300;
-    public static int lowLimit = 5;
+    public static int highLimit = 473;
+    public static int lowLimit = 0;
     public static boolean isCorrectLowLimit = true;
     public static boolean isCorrectHighLimit = false;
     public static boolean isCorrectLowAndHighLimit = false;
@@ -47,8 +47,8 @@ public class Config {
     //winstrike and losestrike
     public static boolean isConsiderWinStrike = true;
     public static boolean isConsiderLoseStrike = true;
-    public static float winStrikeMultiplier = 0.1f;
-    public static float loseStrikeMultiplier = 0.1f;
+    public static float winStrikeMultiplier = 0.04150f;
+    public static float loseStrikeMultiplier = 0.108632f;
 
     //адр
     public static float normalizingCoeffAdr = (float) (1.0/85); //нормировочный коэффициент
