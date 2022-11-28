@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 //This comment
@@ -159,5 +160,33 @@ public class CommonUtils {
         mapValueByFieldName.put("playerForceDefault", Config.playerForceDefault);
         mapValueByFieldName.put("playerStability", Config.playerStability);
         return mapValueByFieldName;
+    }
+
+    public void randomShuffleConfig() {
+        Config.epochsNumber = ThreadLocalRandom.current().nextInt(1, 4);
+        Config.highLimit = ThreadLocalRandom.current().nextInt(200, 600);
+        Config.lowLimit = ThreadLocalRandom.current().nextInt(0, 10);
+        Config.actualityMultiplier = ThreadLocalRandom.current().nextFloat(0.1f, 0.3f);
+        Config.actualityConst = ThreadLocalRandom.current().nextFloat(0.7f, 1.1f);
+        Config.compareMultiplier = ThreadLocalRandom.current().nextFloat(2f, 4f);
+        Config.compareSummand = ThreadLocalRandom.current().nextFloat(100f, 300f);
+        Config.winStrikeMultiplier = ThreadLocalRandom.current().nextFloat(0.01f, 0.2f);
+        Config.loseStrikeMultiplier = ThreadLocalRandom.current().nextFloat(0.01f, 0.2f);
+        Config.differencePercent = ThreadLocalRandom.current().nextFloat(0f, 0.2f);
+        Config.adrMultiplier = ThreadLocalRandom.current().nextFloat(0.4f, 1f);
+        Config.killsMultiplier = ThreadLocalRandom.current().nextFloat(0.4f, 1f);
+        Config.headshotsMultiplier = ThreadLocalRandom.current().nextFloat(0f, 0.04f);
+        Config.ratingMultiplier = ThreadLocalRandom.current().nextFloat(0.6f, 1f);
+        Config.historyMultiplier = ThreadLocalRandom.current().nextFloat(2f, 4f);
+        Config.forceTeamMultiplier = ThreadLocalRandom.current().nextFloat(0.01f, 0.03f);
+        Config.isConsiderLoseStrike = ThreadLocalRandom.current().nextBoolean();
+        Config.isConsiderWinStrike = ThreadLocalRandom.current().nextBoolean();
+        Config.isCorrectLowLimit = ThreadLocalRandom.current().nextBoolean();
+        Config.isCorrectHighLimit = ThreadLocalRandom.current().nextBoolean();
+        Config.isPlayerForceCompressingOutsideEpoch = ThreadLocalRandom.current().nextBoolean();
+        Config.isPlayerForceCompressingInsideEpoch = ThreadLocalRandom.current().nextBoolean();
+        Config.isConsiderActiveMaps = ThreadLocalRandom.current().nextBoolean();
+        Config.isConsiderDifferenceCorrection = ThreadLocalRandom.current().nextBoolean();
+        Config.isConsiderStabilityCorrection = ThreadLocalRandom.current().nextBoolean();
     }
 }

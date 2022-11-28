@@ -11,7 +11,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class ImprovementRequestDto {
     public Integer testDatasetPercent;
+    public Integer testDatasetCount;
     public Integer inactiveDatasetPercent = 0;
+    public Integer inactiveDatasetCount = 0;
     public Map<String, Object> config;
     public List<ConfigAsList> configList;
 }

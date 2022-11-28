@@ -21,7 +21,7 @@ public class ForceTeamCalculator {
     PlayerForceRepository playerForceRepository;
 
     // эту силу прибавляем к силе игрока. Если он выиграл сильных - тогда ему начисляется больший счет, иначе - меньший
-    public float getForceTeam(List<PlayerOnMapResults> team, Map<Integer, List<PlayerForce>> playerForcesMap) {
+    public float getForceTeam(List<PlayerOnMapResults> team, Map<Integer, List<PlayerForce>> playerForcesMap, PlayerOnMapResults player) {
         List<Integer> ids = team.stream().map(e -> e.playerId).toList();
         List<PlayerForce> playerForces = new ArrayList<>();
         ids.forEach(id -> {

@@ -9,6 +9,7 @@ import java.util.List;
 @Component
 public class RoundHistoryCalculator {
 
+    // TODO начиная с какого-то момента id stats map не совпадает у playerResult'a и у history (почти ни на что не влияет)
     public List<Float> getTeamForces(String roundSequence, Boolean leftTeamIsTerroristsInFirstHalf) {
         Float leftForce = 0f;
         Float rightForce = 0f;

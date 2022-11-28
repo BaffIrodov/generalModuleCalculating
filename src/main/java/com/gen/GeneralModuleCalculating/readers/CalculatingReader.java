@@ -65,8 +65,8 @@ public class CalculatingReader {
         return isTestDataset? testDatasetIds: trainDatasetIds;
     }
 
-    public List<Integer> getAvailableStatsIdsOrderedDatasetAndInactive(Integer testPercent, Boolean isTestDataset,
-                                                                       Integer inactivePercent) {
+    public List<Integer> getAvailableStatsIdsOrderedDatasetAndInactive(Integer testPercentOrCount, Boolean isTestDataset,
+                                                                       Integer inactivePercentOrCount, Boolean isPercentRequest) {
         List<Integer> allIds = queryFactory.from(mapsCalculatingQueue)
                 .leftJoin(roundHistory).on(mapsCalculatingQueue.idStatsMap
                         .eq(roundHistory.idStatsMap))
@@ -78,12 +78,23 @@ public class CalculatingReader {
             allIds = allIds
                     .subList(allIds.size() - Config.calculatingStatsIdNumber, allIds.size());
         }
-        Integer waterLineIndex = allIds.size() * (100-testPercent-inactivePercent) / 100;
-        Integer inactiveIndex = allIds.size() * (100-inactivePercent) / 100;
-        List<Integer> trainDatasetIds = allIds.subList(0, waterLineIndex);
-        List<Integer> testDatasetIds = allIds.subList(waterLineIndex, inactiveIndex);
-        List<Integer> inactiveIds = allIds.subList(inactiveIndex, allIds.size());
-        return isTestDataset? testDatasetIds: trainDatasetIds;
+        Integer waterLineIndex = 0;
+        Integer inactiveIndex = 0;
+        if (isPercentRequest) {
+            waterLineIndex = allIds.size() * (100 - testPercentOrCount - inactivePercentOrCount) / 100;
+            inactiveIndex = allIds.size() * (100 - inactivePercentOrCount) / 100;
+        } else {
+            waterLineIndex = allIds.size() - testPercentOrCount - inactivePercentOrCount;
+            inactiveIndex = allIds.size() - inactivePercentOrCount;
+        }
+        if (waterLineIndex != 0 && inactiveIndex != 0) {
+            List<Integer> trainDatasetIds = allIds.subList(0, waterLineIndex);
+            List<Integer> testDatasetIds = allIds.subList(waterLineIndex, inactiveIndex);
+            List<Integer> inactiveIds = allIds.subList(inactiveIndex, allIds.size());
+            return isTestDataset ? testDatasetIds : trainDatasetIds;
+        } else {
+            return null;
+        }
     }
 
     public List<Integer> getPlayerIdsWhoExistsInCalculatingMatches(List<Integer> availableStatsIds) {
