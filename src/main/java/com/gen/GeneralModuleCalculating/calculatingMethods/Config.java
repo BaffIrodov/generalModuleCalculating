@@ -33,7 +33,7 @@ public class Config {
     public static boolean isPlayerForceCompressingOutsideEpoch = true;
     public static float actualityMultiplier = 0.12794f;
     public static float actualityConst = 0.9154f;
-    public static float compareMultiplier = 1.95245f;
+    public static float compareMultiplier = 2.10245f;
     public static float compareSummand = 196.22f;
     public static float differencePercent = 0.00573f;
 
